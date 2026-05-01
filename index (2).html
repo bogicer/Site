@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpireWorld — Minecraft сервер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --orange: #F26419; --orange-pale: #FFF0E8; --white: #FFFFFF;
+            --bg: #F8F5F1; --text: #1C1410; --text2: #6B5C50; --text3: #A8917F;
+            --border: #E6DDD4; --border2: #D4C4B5;
+            --admin-bg: #0f0f12; --admin-card: #18181b; --admin-border: #27272a;
+        }
+        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        /* АДМІН-СТИЛІ */
+        body.admin-mode { background: var(--admin-bg); color: #e4e4e7; }
+        body.admin-mode .main-site { display: none; }
+        body.admin-mode .admin-sidebar { display: flex; }
+        /* Основний сайт */
+        .main-site { display: block; }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 68px;
+            background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); display: flex; align-items: center;
+            justify-content: space-between; padding: 0 40px;
+        }
+        .logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; cursor: pointer; display: flex; gap: 10px; }
+        .logo span { color: var(--orange); }
+        .logo-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; }
+        .nav-links { display: flex; gap: 8px; list-style: none; flex-wrap: wrap; }
+        .nav-links a { color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 700; padding: 8px 16px; border-radius: 10px; cursor: pointer; }
+        .nav-links a:hover { background: var(--orange-pale); color: var(--orange); }
+        .nav-links .nav-btn { background: var(--orange); color: white !important; }
+        section { display: none; min-height: 100vh; padding-top: 68px; }
+        section.active { display: block; }
+        #home { background: var(--white); }
+        .hero { max-width: 1000px; margin: 0 auto; padding: 80px 40px 0; text-align: center; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--orange-pale); border: 1px solid #FFD9C0; border-radius: 100px; padding: 6px 18px; font-size: 12px; font-weight: 800; color: var(--orange); margin-bottom: 30px; }
+        h1 { font-family: 'Syne', sans-serif; font-size: clamp(48px, 8vw, 100px); font-weight: 800; line-height: 1; letter-spacing: -3px; }
+        h1 span { color: var(--orange); }
+        .hero-sub { font-size: 14px; font-weight: 700; color: var(--text3); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; }
+        .ip-card { display: inline-flex; background: var(--bg); border: 2px solid var(--border2); border-radius: 14px; overflow: hidden; margin-bottom: 35px; }
+        .ip-text { padding: 14px 28px; font-family: 'Syne', sans-serif; font-weight: 700; border-right: 2px solid var(--border2); }
+        .ip-copy { padding: 14px 24px; background: transparent; border: none; font-weight: 800; color: var(--orange); cursor: pointer; }
+        .btn-primary { background: var(--orange); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(242,100,25,0.4); }
+        .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border2); padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        .btn-secondary:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-pale); }
+        .stats { background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px; display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+        .stat { text-align: center; }
+        .stat-number { font-family: 'Syne', sans-serif; font-size: 38px; font-weight: 800; color: var(--orange); }
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; margin-top: 5px; }
+        .features { padding: 70px 40px; max-width: 1100px; margin: 0 auto; }
+        .section-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
+        .section-title { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 42px); font-weight: 800; margin-bottom: 40px; }
+        .section-title span { color: var(--orange); }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .feature-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: 0.2s; }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
+        .feature-icon { font-size: 36px; margin-bottom: 12px; }
+        .feature-title { font-family: 'Syne', sans-serif; font-weight: 800; margin-bottom: 8px; }
+        .feature-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
+        .page-container { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
+        /* Кабінет */
+        .cabinet-box { max-width: 520px; margin: 0 auto; background: var(--bg); border: 1px solid var(--border); border-radius: 24px; padding: 45px; text-align: center; }
+        .cabinet-avatar { width: 90px; height: 90px; background: var(--orange-pale); border: 2px solid var(--orange); border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 15px; }
+        .cabinet-name { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; }
+        .cabinet-rank { display: inline-block; background: #F59E0B; color: white; padding: 5px 14px; border-radius: 100px; font-size: 11px; font-weight: 800; margin-bottom: 25px; }
+        .cabinet-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .cabinet-stat { background: white; border: 1px solid var(--border); padding: 18px; border-radius: 14px; }
+        .cabinet-stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--orange); }
+        .cabinet-inventory { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: left; margin-bottom: 25px; }
+        .inventory-item { background: var(--bg); padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .auth-tabs { display: flex; gap: 12px; justify-content: center; margin-bottom: 25px; }
+        .auth-tab { background: none; border: none; font-weight: 800; color: var(--text3); cursor: pointer; padding-bottom: 5px; border-bottom: 2px solid transparent; }
+        .auth-tab.active { color: var(--orange); border-color: var(--orange); }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .auth-input { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 15px; background: white; }
+        /* Магазин */
+        .shop-servers { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
+        .server-btn { background: #F2EDE6; border: 1px solid var(--border); padding: 10px 28px; border-radius: 14px; font-weight: 800; cursor: pointer; }
+        .server-btn.active, .server-btn:hover { background: var(--text); color: white; }
+        .shop-categories { display: flex; gap: 10px; margin-bottom: 35px; flex-wrap: wrap; }
+        .category-btn { background: white; border: 1px solid var(--border); padding: 8px 20px; border-radius: 100px; font-weight: 800; cursor: pointer; }
+        .category-btn.active, .category-btn:hover { background: var(--orange); color: white; }
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px; }
+        .product { background: white; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; transition: 0.2s; }
+        .product:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .product-icon { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 55px; }
+        .product-body { padding: 18px; }
+        .product-name { font-weight: 800; font-size: 18px; }
+        .product-price { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--orange); }
+        .buy-btn { background: var(--orange); color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        /* Форум (простий) */
+        .forum-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 40px; }
+        .forum-cat { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+        .forum-cat-icon { font-size: 28px; }
+        .forum-cat-count { margin-left: auto; font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--orange); }
+        .new-topic { background: var(--orange); color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-bottom: 25px; }
+        .topics-list { display: flex; flex-direction: column; gap: 10px; }
+        .topic-item { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+        /* Правила */
+        .rules-list { max-width: 750px; }
+        .rule { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 22px 25px; margin-bottom: 14px; display: flex; gap: 18px; }
+        .rule-number { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--orange); background: var(--orange-pale); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        footer { background: var(--text); color: rgba(255,255,255,0.6); padding: 50px 40px 30px; margin-top: 40px; }
+        .footer-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; margin-bottom: 40px; }
+        .footer-brand .brand { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: white; margin-bottom: 12px; }
+        .footer-col a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 13px; cursor: pointer; display: block; margin-bottom: 8px; }
+        .footer-col a:hover { color: var(--orange); }
+        .support-fab { position: fixed; bottom: 30px; right: 30px; background: var(--orange); width: 60px; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 100; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.2s; }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal { background: white; border-radius: 28px; padding: 35px; max-width: 480px; width: 90%; }
+        .modal input, .modal textarea { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--text); color: white; padding: 14px 24px; border-radius: 12px; z-index: 3000; transform: translateY(80px); opacity: 0; transition: 0.25s; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        /* Адмін-панель */
+        .admin-sidebar {
+            display: none; width: 280px; background: var(--admin-card); border-right: 1px solid var(--admin-border);
+            position: fixed; height: 100vh; overflow-y: auto; flex-direction: column; padding: 24px 16px;
+        }
+        .admin-logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--admin-border); }
+        .admin-nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; cursor: pointer; margin-bottom: 4px; }
+        .admin-nav-item:hover, .admin-nav-item.active { background: #27272a; color: var(--orange); }
+        .admin-content { margin-left: 280px; padding: 24px 32px; width: calc(100% - 280px); }
+        .admin-card { background: var(--admin-card); border: 1px solid var(--admin-border); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--admin-card); border: 1px solid var(--admin-border); border-radius: 16px; padding: 20px; text-align: center; }
+        .ticket-item, .topup-item { background: #1f1f24; border-radius: 12px; padding: 16px; margin-bottom: 12px; border-left: 3px solid var(--orange); }
+        .btn-admin { background: var(--orange); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin: 4px; }
+        .console-log { background: #0a0a0c; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 12px; height: 200px; overflow-y: auto; }
+        @media (max-width: 768px) { .admin-content { margin-left: 0; width: 100%; } .admin-sidebar { width: 100%; height: auto; position: relative; } }
+    </style>
+</head>
+<body>
+
+<!-- ОСНОВНИЙ САЙТ -->
+<div class="main-site">
+    <nav>
+        <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>Spire<span>World</span></div>
+        <ul class="nav-links">
+            <li><a onclick="showPage('home')">Головна</a></li>
+            <li><a onclick="showPage('cabinet')">Кабінет</a></li>
+            <li><a onclick="showPage('shop')">Магазин</a></li>
+            <li><a onclick="showPage('forum')">Форум</a></li>
+            <li><a onclick="showPage('rules')">Правила</a></li>
+            <li><a class="nav-btn" onclick="showPage('cabinet')">👤 Кабінет</a></li>
+            <li><a class="nav-btn" id="adminBtn" style="background:#2d2d44;">🛡️ Адмін</a></li>
+        </ul>
+    </nav>
+    <div class="support-fab" onclick="openSupportModal()">💬</div>
+
+    <!-- ГОЛОВНА СТОРІНКА -->
+    <section id="home" class="active">
+        <div class="hero">
+            <div class="hero-badge"><div class="logo-dot"></div><span id="onlineBadge">247</span> гравців зараз онлайн</div>
+            <h1>SPIRE<span>WORLD</span></h1>
+            <p class="hero-sub">Survival · SkyBlock · Creative · PvP</p>
+            <div class="ip-card"><div class="ip-text">play.spireworld.ua</div><button class="ip-copy" onclick="copyIP()">📋 Копіювати IP</button></div>
+            <div class="hero-buttons"><button class="btn-primary" onclick="showPage('cabinet')">Почати гру</button><button class="btn-secondary" onclick="showPage('shop')">Магазин донатів</button></div>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="stat-number" id="statOnline">247</div><div class="stat-label">Гравців онлайн</div></div>
+            <div class="stat"><div class="stat-number" id="statRegistered">0</div><div class="stat-label">Зареєстровано</div></div>
+            <div class="stat"><div class="stat-number" id="statDays">387</div><div class="stat-label">Днів роботи</div></div>
+            <div class="stat"><div class="stat-number" id="statModes">6</div><div class="stat-label">Режимів гри</div></div>
+        </div>
+        <div class="features">
+            <div class="section-label">Можливості</div>
+            <div class="section-title">Що чекає тебе на <span>SpireWorld</span></div>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">⚔️</div><div class="feature-title">PvP Арени</div><div class="feature-desc">Рейтингові бої, турніри та щотижневі нагороди для найкращих.</div></div>
+                <div class="feature-card"><div class="feature-icon">🏝️</div><div class="feature-title">SkyBlock</div><div class="feature-desc">Будуй острів з нуля і змагайся з іншими гравцями.</div></div>
+                <div class="feature-card"><div class="feature-icon">🏕️</div><div class="feature-title">Survival</div><div class="feature-desc">Класичне виживання з клановою системою та захопленням фортець.</div></div>
+                <div class="feature-card"><div class="feature-icon">🎨</div><div class="feature-title">Creative</div><div class="feature-desc">Безмежна творчість на plot-сервері з великими ділянками.</div></div>
+                <div class="feature-card"><div class="feature-icon">💰</div><div class="feature-title">Економіка</div><div class="feature-desc">Своя валюта, аукціон та магазини гравців на всіх режимах.</div></div>
+                <div class="feature-card"><div class="feature-icon">🛡️</div><div class="feature-title">Захист</div><div class="feature-desc">Анти-чит, захист земель та підтримка адміністрації 24/7.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- КАБІНЕТ -->
+    <section id="cabinet"><div class="page-container"><div class="section-label">Твій профіль</div><div class="section-title">Особистий <span>кабінет</span></div>
+    <div id="authBox" class="cabinet-box"><div class="auth-tabs"><button class="auth-tab active" onclick="switchAuthTab('login')">Вхід</button><button class="auth-tab" onclick="switchAuthTab('register')">Реєстрація</button></div>
+    <div id="loginForm" class="auth-form active"><input type="text" id="loginNick" class="auth-input" placeholder="Нікнейм"><input type="password" id="loginPass" class="auth-input" placeholder="Пароль"><button class="btn-primary" style="width:100%" onclick="userLogin()">Увійти</button></div>
+    <div id="registerForm" class="auth-form"><input type="text" id="regNick" class="auth-input" placeholder="Нікнейм"><input type="password" id="regPass" class="auth-input" placeholder="Пароль"><button class="btn-primary" style="width:100%" onclick="userRegister()">Зареєструватися</button></div></div>
+    <div id="profileBox" class="cabinet-box" style="display:none"><div class="cabinet-avatar" id="profileAvatar">😎</div><div class="cabinet-name" id="profileName"></div><div class="cabinet-rank" id="profileRank">ГРАВЕЦЬ</div>
+    <div class="cabinet-stats"><div class="cabinet-stat"><div class="cabinet-stat-value" id="profileBalance">0</div><div>Баланс (₴)</div></div><div class="cabinet-stat"><div class="cabinet-stat-value" style="color:#22C55E">Онлайн</div><div>Статус</div></div></div>
+    <div class="cabinet-inventory"><div>🎁 Мої покупки</div><ul id="profileInventory" style="margin-top:15px"></ul></div>
+    <div style="display:flex; gap:12px"><button class="btn-primary" onclick="openTopupModal()">💳 Поповнити баланс</button><button class="btn-secondary" onclick="userLogout()">Вийти</button></div></div></div></section>
+
+    <!-- МАГАЗИН (короткий, але робочий) -->
+    <section id="shop"><div class="page-container"><div class="section-label">Офіційний магазин</div><div class="section-title">Магазин <span>донатів</span></div>
+    <div class="shop-servers"><button class="server-btn active" onclick="changeServer('grief',this)">🔥 Гріф</button><button class="server-btn" onclick="changeServer('anarchy',this)">☠️ Анархія</button></div>
+    <div class="shop-categories"><button class="category-btn active" onclick="changeCategory('ranks',this)">⭐ Ранги</button><button class="category-btn" onclick="changeCategory('items',this)">🎁 Предмети</button></div>
+    <div class="shop-grid" id="shopGrid"></div></div></section>
+
+    <!-- ФОРУМ -->
+    <section id="forum"><div class="page-container"><div class="section-label">Спільнота</div><div class="section-title">Форум <span>SpireWorld</span></div>
+    <div class="forum-categories"><div class="forum-cat"><div class="forum-cat-icon">📢</div><div>Оголошення</div><div class="forum-cat-count">12</div></div><div class="forum-cat"><div class="forum-cat-icon">💬</div><div>Загальне</div><div class="forum-cat-count">348</div></div></div>
+    <button class="new-topic" onclick="openForumModal()">✏️ Нова тема</button><div class="topics-list" id="topicsList"></div></div></section>
+
+    <!-- ПРАВИЛА -->
+    <section id="rules"><div class="page-container"><div class="section-label">Правила серверу</div><div class="section-title">Правила <span>SpireWorld</span></div>
+    <div class="rules-list" id="rulesList"></div></div></section>
+
+    <footer><div class="footer-grid"><div class="footer-brand"><div class="brand">Spire<span>World</span></div><p>Найкращий україномовний Minecraft сервер</p></div>
+    <div class="footer-col"><h4>Навігація</h4><a onclick="showPage('home')">Головна</a><a onclick="showPage('cabinet')">Кабінет</a><a onclick="showPage('shop')">Магазин</a><a onclick="showPage('forum')">Форум</a><a onclick="showPage('rules')">Правила</a></div>
+    <div class="footer-col"><h4>Контакти</h4><a>Discord</a><a>Telegram</a></div></div>
+    <div class="footer-bottom"><p>© 2024 SpireWorld</p><div class="socials">💬 📱 ▶️</div></div></footer>
+</div>
+
+<!-- АДМІН-ПАНЕЛЬ -->
+<div class="admin-sidebar" id="adminSidebar">
+    <div class="admin-logo">Spire<span>ADMIN</span></div>
+    <div class="admin-nav-item active" data-tab="dashboard">📊 Дашборд</div>
+    <div class="admin-nav-item" data-tab="tickets">🎫 Тікети</div>
+    <div class="admin-nav-item" data-tab="topups">💰 Заявки на поповнення</div>
+    <div class="admin-nav-item" data-tab="orders">📦 Замовлення (продажі)</div>
+    <div class="admin-nav-item" data-tab="users">👥 Користувачі</div>
+    <div class="admin-nav-item" data-tab="console">🖥️ Консоль</div>
+    <div class="admin-nav-item" data-tab="settings">⚙️ Налаштування</div>
+    <div class="admin-nav-item" style="margin-top:20px;" id="exitAdminBtn">🚪 Вийти з адмінки</div>
+</div>
+<div class="admin-content" id="adminContent">
+    <div id="dashboardTab"><div class="admin-card"><h2>📊 Статистика</h2><div class="admin-stats" id="adminStats"></div><div class="admin-card"><h3>Останні дії</h3><div id="adminLogs" class="console-log"></div></div></div></div>
+    <div id="ticketsTab" style="display:none;"><div class="admin-card"><h2>🎫 Тікети підтримки</h2><div id="ticketsList"></div></div></div>
+    <div id="topupsTab" style="display:none;"><div class="admin-card"><h2>💰 Заявки на поповнення</h2><div id="topupsList"></div></div></div>
+    <div id="ordersTab" style="display:none;"><div class="admin-card"><h2>📦 Замовлення (продажі)</h2><div id="ordersList"></div></div></div>
+    <div id="usersTab" style="display:none;"><div class="admin-card"><h2>👥 Користувачі</h2><div id="usersList"></div></div></div>
+    <div id="consoleTab" style="display:none;"><div class="admin-card"><h2>🖥️ Консоль команд</h2><input type="text" id="consoleCommand" placeholder="give balance <нік> <сума>" style="width:100%; padding:10px;"><button class="btn-admin" onclick="execConsoleCommand()">Виконати</button><div id="consoleOutput" class="console-log" style="margin-top:12px;"></div></div></div>
+    <div id="settingsTab" style="display:none;"><div class="admin-card"><h2>⚙️ Налаштування</h2><button class="btn-admin" onclick="exportData()">📁 Експорт JSON</button><button class="btn-admin" onclick="clearAllData()">⚠️ Очистити всі дані</button></div></div>
+</div>
+
+<!-- МОДАЛЬНІ ВІКНА -->
+<div id="supportModal" class="modal-overlay"><div class="modal"><h2>📞 Технічна підтримка</h2><input type="text" id="supportName" placeholder="Нікнейм"><input type="email" id="supportEmail" placeholder="Ваш Email"><textarea id="supportMessage" rows="3" placeholder="Опишіть проблему..."></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="closeSupportModal()">Скасувати</button><button class="btn-primary" onclick="sendSupport()">📧 Відправити</button></div></div></div>
+<div id="topupModal" class="modal-overlay"><div class="modal"><h2>💳 Поповнення балансу</h2><input type="number" id="topupAmount" placeholder="Сума (₴)"><input type="email" id="topupEmail" placeholder="Ваш Email"><div class="modal-buttons"><button class="btn-secondary" onclick="closeTopupModal()">Скасувати</button><button class="btn-primary" onclick="requestTopup()">Оформити заявку</button></div></div></div>
+<div id="forumModal" class="modal-overlay"><div class="modal"><h2>✏️ Нова тема</h2><input type="text" id="topicTitle" placeholder="Заголовок"><textarea id="topicContent" rows="3" placeholder="Текст..."></textarea><div class="modal-buttons"><button class="btn-secondary" onclick="closeForumModal()">Скасувати</button><button class="btn-primary" onclick="createTopic()">Опублікувати</button></div></div></div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getDatabase, ref, get, set, update, push, onValue, remove } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyBGRcQS_RNA4DWboldCjzBhkvLev2n8fLs", authDomain: "spireworld-30c51.firebaseapp.com", projectId: "spireworld-30c51", storageBucket: "spireworld-30c51.firebasestorage.app", messagingSenderId: "1029200336194", appId: "1:1029200336194:web:8b64a1a3d853b750b9e4db" };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    console.log('✅ Firebase підключено');
+
+    let currentUser = localStorage.getItem('spireworld_current_user');
+    let isAdmin = false;
+
+    function toast(msg) { let el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); }
+    window.copyIP = () => { navigator.clipboard.writeText('play.spireworld.ua'); toast('✅ IP скопійовано!'); };
+    window.showPage = (id) => { document.querySelectorAll('section').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); };
+
+    // ========== АВТОРИЗАЦІЯ ==========
+    window.switchAuthTab = (t) => { document.querySelectorAll('.auth-tab').forEach(tab=>tab.classList.remove('active')); document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active')); if(t==='login'){ document.querySelectorAll('.auth-tab')[0].classList.add('active'); document.getElementById('loginForm').classList.add('active');} else { document.querySelectorAll('.auth-tab')[1].classList.add('active'); document.getElementById('registerForm').classList.add('active');} };
+    window.userRegister = async () => { let nick=document.getElementById('regNick').value.trim(); let pass=document.getElementById('regPass').value.trim(); if(nick.length<3||pass.length<3){toast('❌ Мінімум 3 символи');return;} const snap=await get(ref(db,`users/${nick}`)); if(snap.exists()){toast('❌ Користувач вже є');return;} await set(ref(db,`users/${nick}`),{password:btoa(pass),balance:0,inventory:[],rank:'Гравець'}); toast('✅ Реєстрація успішна!'); switchAuthTab('login'); document.getElementById('loginNick').value=nick; };
+    window.userLogin = async () => { let nick=document.getElementById('loginNick').value.trim(); let pass=document.getElementById('loginPass').value.trim(); const snap=await get(ref(db,`users/${nick}`)); if(!snap.exists()){toast('❌ Користувача немає');return;} if(atob(snap.val().password)!==pass){toast('❌ Пароль невірний');return;} currentUser=nick; localStorage.setItem('spireworld_current_user',nick); toast(`✅ Ласкаво просимо, ${nick}!`); updateCabinetUI(); checkAdmin(); };
+    window.userLogout = () => { currentUser=null; localStorage.removeItem('spireworld_current_user'); toast('👋 Вийшли'); updateCabinetUI(); checkAdmin(); };
+    async function updateCabinetUI(){ if(currentUser){ const snap=await get(ref(db,`users/${currentUser}`)); if(snap.exists()){ let d=snap.val(); document.getElementById('authBox').style.display='none'; document.getElementById('profileBox').style.display='block'; document.getElementById('profileName').innerText=currentUser; document.getElementById('profileAvatar').innerText=currentUser[0].toUpperCase(); document.getElementById('profileBalance').innerText=d.balance||0; document.getElementById('profileRank').innerText=d.rank||'Гравець'; let inv=d.inventory||[]; let html=''; if(inv.length===0) html='<li>Поки порожньо</li>'; else inv.forEach(i=>html+=`<li class="inventory-item">${i} <span>✓</span></li>`); document.getElementById('profileInventory').innerHTML=html; return; } } document.getElementById('authBox').style.display='block'; document.getElementById('profileBox').style.display='none'; }
+    async function checkAdmin(){ if(currentUser==='vortex'){ isAdmin=true; document.getElementById('adminBtn').style.display='inline-block'; } else { isAdmin=false; document.getElementById('adminBtn').style.display='none'; } }
+
+    // ========== ТІКЕТИ ТА ЗАЯВКИ (ВІДПРАВКА НА ПОШТУ) ==========
+    window.sendSupport = async () => { let name=document.getElementById('supportName').value.trim(); let email=document.getElementById('supportEmail').value.trim(); let msg=document.getElementById('supportMessage').value.trim(); if(!name||!email||!msg){toast('❌ Заповніть всі поля');return;} const ticketRef=push(ref(db,'support_tickets')); await set(ticketRef,{nickname:name,email:email,message:msg,time:new Date().toLocaleString(),status:'new'}); // надсилання на пошту
+    fetch('https://formsubmit.co/ajax/simpleworld237@gmail.com',{method:'POST',body:new URLSearchParams({email:'simpleworld237@gmail.com',subject:`Тікет від ${name}`,message:`Від: ${name} (${email})\n${msg}`})}).catch(e=>console.log); toast('✅ Тікет відправлено! Відповімо на email'); closeSupportModal(); };
+    window.requestTopup = async () => { if(!currentUser){toast('❌ Увійдіть');return;} let amount=document.getElementById('topupAmount').value.trim(); let email=document.getElementById('topupEmail').value.trim(); if(!amount||amount<10){toast('❌ Сума від 10₴');return;} if(!email){toast('❌ Введіть email');return;} const reqRef=push(ref(db,'topup_requests')); await set(reqRef,{username:currentUser,amount:parseInt(amount),email:email,time:new Date().toLocaleString(),status:'pending'}); fetch('https://formsubmit.co/ajax/simpleworld237@gmail.com',{method:'POST',body:new URLSearchParams({email:'simpleworld237@gmail.com',subject:`Заявка на поповнення від ${currentUser}`,message:`${currentUser} хоче поповнити ${amount}₴, email: ${email}`})}); toast(`✅ Заявку на ${amount}₴ відправлено!`); closeTopupModal(); };
+
+    // ========== МАГАЗИН ==========
+    const shopData={grief:{ranks:[{icon:'🔪',name:'GRIEFER',price:99,perks:['Кіт','/tpa']},{icon:'🔥',name:'WARLORD',price:199,popular:true,perks:['/fly','5 регіонів']}],items:[{icon:'⚔️',name:'Меч Бога',price:49,perks:['Гострота V']}]},anarchy:{ranks:[{icon:'☠️',name:'SURVIVOR',price:79,perks:['Жовтий нік']}],items:[]}};
+    let curSrv='grief',curCat='ranks';
+    window.changeServer=(s,btn)=>{curSrv=s; document.querySelectorAll('.server-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderShop();};
+    window.changeCategory=(c,btn)=>{curCat=c; document.querySelectorAll('.category-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderShop();};
+    function renderShop(){ let items=shopData[curSrv]?.[curCat]||[]; let grid=document.getElementById('shopGrid'); if(!items.length){grid.innerHTML='<p>Немає товарів</p>';return;} grid.innerHTML=items.map(item=>`<div class="product"><div class="product-icon">${item.icon}</div><div class="product-body"><div class="product-name">${item.name}</div><div class="product-price">${item.price}₴</div><button class="buy-btn" onclick="buyItem('${item.name}',${item.price})">Купити</button></div></div>`).join('');}
+    window.buyItem=async(name,price)=>{ if(!currentUser){toast('Увійдіть');return;} const snap=await get(ref(db,`users/${currentUser}`)); let bal=snap.val().balance||0; if(bal<price){toast('Недостатньо коштів');return;} let inv=snap.val().inventory||[]; inv.push(name); await update(ref(db,`users/${currentUser}`),{balance:bal-price,inventory:inv}); await push(ref(db,'orders'),{user:currentUser,item:name,amount:price,time:new Date().toLocaleString()}); toast(`Куплено ${name}`); updateCabinetUI(); };
+    renderShop();
+
+    // ========== ФОРУМ ==========
+    let topics=[{icon:'📢',title:'Оновлення 2.5',author:'Admin',time:'2 год',replies:34}];
+    function renderForum(){ document.getElementById('topicsList').innerHTML=topics.map(t=>`<div class="topic-item"><div class="topic-avatar">${t.icon}</div><div><div>${t.title}</div><div>${t.author} · ${t.time}</div></div><div>${t.replies}</div></div>`).join('');}
+    window.createTopic=()=>{ let title=document.getElementById('topicTitle').value.trim(); let cont=document.getElementById('topicContent').value.trim(); if(!title||!cont){toast('Заповніть');return;} topics.unshift({icon:'💬',title:title,author:currentUser||'Гість',time:'щойно',replies:0}); renderForum(); closeForumModal(); toast('Тему опубліковано'); };
+    renderForum();
+
+    // ========== ПРАВИЛА ==========
+    const rulesArr=[{num:'01',title:'Повага',desc:'Не ображайте інших.'},{num:'02',title:'Чити',desc:'Бан назавжди.'}];
+    function renderRules(){ document.getElementById('rulesList').innerHTML=rulesArr.map(r=>`<div class="rule"><div class="rule-number">${r.num}</div><div><h3>${r.title}</h3><p>${r.desc}</p></div></div>`).join('');}
+    renderRules();
+
+    // ========== АДМІН-ПАНЕЛЬ ==========
+    document.getElementById('adminBtn').onclick=()=>{ if(!isAdmin){toast('❌ Доступ тільки для vortex'); showPage('cabinet'); return;} document.body.classList.add('admin-mode'); loadAdminDashboard(); };
+    document.getElementById('exitAdminBtn').onclick=()=>{ document.body.classList.remove('admin-mode'); };
+
+    async function loadAdminDashboard(){
+        const usersSnap=await get(ref(db,'users')); const usersCount=usersSnap.exists()?Object.keys(usersSnap.val()).length:0;
+        const ticketsSnap=await get(ref(db,'support_tickets')); const ticketsCount=ticketsSnap.exists()?Object.keys(ticketsSnap.val()).length:0;
+        const topupsSnap=await get(ref(db,'topup_requests')); const topupsCount=topupsSnap.exists()?Object.keys(topupsSnap.val()).length:0;
+        const ordersSnap=await get(ref(db,'orders')); let totalSales=0; if(ordersSnap.exists()) for(let id in ordersSnap.val()) totalSales+=ordersSnap.val()[id].amount||0;
+        document.getElementById('adminStats').innerHTML=`<div class="stat-card"><div class="stat-number">${usersCount}</div><div>Користувачів</div></div><div class="stat-card"><div class="stat-number">${ticketsCount}</div><div>Тікетів</div></div><div class="stat-card"><div class="stat-number">${topupsCount}</div><div>Заявок</div></div><div class="stat-card"><div class="stat-number">${totalSales}₴</div><div>Продажів</div></div>`;
+        const logsSnap=await get(ref(db,'admin_logs')); let logsHtml=''; if(logsSnap.exists()){ const logs=Object.values(logsSnap.val()).reverse().slice(0,20); logsHtml=logs.map(l=>`<div>[${l.time}] ${l.action}</div>`).join('');} document.getElementById('adminLogs').innerHTML=logsHtml||'Немає логів';
+        let ticketsHtml=''; if(ticketsSnap.exists()) for(let id in ticketsSnap.val()){ let t=ticketsSnap.val()[id]; ticketsHtml+=`<div class="ticket-item"><b>${t.nickname}</b> (${t.email})<br>${t.message}<br><small>${t.time}</small><button class="btn-admin" onclick="closeTicket('${id}')">Закрити</button></div>`;} document.getElementById('ticketsList').innerHTML=ticketsHtml||'Немає';
+        let topupsHtml=''; if(topupsSnap.exists()) for(let id in topupsSnap.val()){ let u=topupsSnap.val()[id]; topupsHtml+=`<div class="topup-item"><b>${u.username}</b> - ${u.amount}₴<br>Email: ${u.email}<br><small>${u.time}</small><br><button class="btn-admin" onclick="approveTopup('${id}','${u.username}',${u.amount})">✅ Підтвердити</button> <button class="btn-admin" onclick="rejectTopup('${id}')">❌ Відхилити</button></div>`;} document.getElementById('topupsList').innerHTML=topupsHtml||'Немає';
+        let ordersHtml='<table class="admin-table"><tr><th>Користувач</th><th>Товар</th><th>Сума</th><th>Час</th></tr>'; if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o=ordersSnap.val()[id]; ordersHtml+=`<tr><td>${o.user}</td><td>${o.item}</td><td>${o.amount}₴</td><td>${o.time}</td></tr>`;} ordersHtml+='</table>'; document.getElementById('ordersList').innerHTML=ordersHtml;
+        let usersHtml='<table class="admin-table"><tr><th>Нік</th><th>Баланс</th><th>Ранг</th><th>Дія</th></tr>'; if(usersSnap.exists()) for(let nick in usersSnap.val()){ let u=usersSnap.val()[nick]; usersHtml+=`<tr><td>${nick}</td><td>${u.balance||0}₴</td><td>${u.rank||'Гравець'}</td><td><button class="btn-admin" onclick="editUser('${nick}')">Змінити баланс</button></td></tr>`;} usersHtml+='</table>'; document.getElementById('usersList').innerHTML=usersHtml;
+    }
+    window.closeTicket=async(id)=>{ await set(ref(db,`support_tickets/${id}/status`),'closed'); toast('Закрито'); loadAdminDashboard(); addLog(`Закрито тікет ${id}`); };
+    window.approveTopup=async(id,user,amount)=>{ await update(ref(db,`users/${user}`),{balance:( (await get(ref(db,`users/${user}`))).val().balance||0)+amount}); await set(ref(db,`topup_requests/${id}/status`),'approved'); toast(`✅ ${amount}₴ зараховано ${user}`); loadAdminDashboard(); addLog(`Поповнено ${user} на ${amount}₴`); };
+    window.rejectTopup=async(id)=>{ await set(ref(db,`topup_requests/${id}/status`),'rejected'); toast('Відхилено'); loadAdminDashboard(); };
+    window.editUser=async(nick)=>{ let newBal=prompt('Новий баланс:'); if(newBal!==null){ await update(ref(db,`users/${nick}`),{balance:parseInt(newBal)}); toast(`Баланс ${nick} оновлено`); loadAdminDashboard(); addLog(`Змінено баланс ${nick} на ${newBal}₴`); } };
+    window.execConsoleCommand=async()=>{ let cmd=document.getElementById('consoleCommand').value.trim(); if(cmd.startsWith('give balance ')){ let parts=cmd.split(' '); let target=parts[2]; let amount=parseInt(parts[3]); let snap=await get(ref(db,`users/${target}`)); if(snap.exists()){ await update(ref(db,`users/${target}`),{balance:(snap.val().balance||0)+amount}); toast(`✅ ${target} +${amount}₴`); addLog(`Консоль: ${cmd}`); loadAdminDashboard(); } else toast('Користувача немає'); } else toast('Невідома команда'); };
+    async function addLog(action){ const logRef=push(ref(db,'admin_logs')); await set(logRef,{action,time:new Date().toLocaleString()}); }
+    window.exportData=async()=>{ const data=await get(ref(db,'/')); const json=JSON.stringify(data.val()); const blob=new Blob([json],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='backup.json'; a.click(); toast('Експорт виконано'); };
+    window.clearAllData=async()=>{ if(confirm('Всі дані будуть видалені!')){ await set(ref(db,'users'),{}); await set(ref(db,'support_tickets'),{}); await set(ref(db,'topup_requests'),{}); await set(ref(db,'orders'),{}); await set(ref(db,'admin_logs'),{}); toast('Всі дані очищено'); loadAdminDashboard(); } };
+
+    // Навігація по вкладках адмінки
+    document.querySelectorAll('.admin-nav-item[data-tab]').forEach(item=>{ item.onclick=()=>{ document.querySelectorAll('.admin-nav-item').forEach(i=>i.classList.remove('active')); item.classList.add('active'); let tab=item.getAttribute('data-tab'); document.getElementById('dashboardTab').style.display=tab==='dashboard'?'block':'none'; document.getElementById('ticketsTab').style.display=tab==='tickets'?'block':'none'; document.getElementById('topupsTab').style.display=tab==='topups'?'block':'none'; document.getElementById('ordersTab').style.display=tab==='orders'?'block':'none'; document.getElementById('usersTab').style.display=tab==='users'?'block':'none'; document.getElementById('consoleTab').style.display=tab==='console'?'block':'none'; document.getElementById('settingsTab').style.display=tab==='settings'?'block':'none'; if(tab!=='dashboard')loadAdminDashboard(); }; });
+
+    // Модалки
+    window.openSupportModal=()=>document.getElementById('supportModal').classList.add('open');
+    window.closeSupportModal=()=>document.getElementById('supportModal').classList.remove('open');
+    window.openTopupModal=()=>document.getElementById('topupModal').classList.add('open');
+    window.closeTopupModal=()=>document.getElementById('topupModal').classList.remove('open');
+    window.openForumModal=()=>document.getElementById('forumModal').classList.add('open');
+    window.closeForumModal=()=>document.getElementById('forumModal').classList.remove('open');
+
+    // Статистика на головній (онлайн та кількість користувачів)
+    async function updateMainStats(){ const snap=await get(ref(db,'users')); const count=snap.exists()?Object.keys(snap.val()).length:0; document.getElementById('statRegistered').innerText=count; document.getElementById('onlineBadge').innerText=Math.floor(150+Math.random()*100); document.getElementById('statOnline').innerText=Math.floor(150+Math.random()*100); }
+    updateMainStats(); setInterval(updateMainStats,30000);
+    updateCabinetUI(); checkAdmin();
+</script>
+</body>
+</html>

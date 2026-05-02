@@ -87,7 +87,7 @@
         .cabinet-stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--orange); }
         .cabinet-section { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: left; margin-bottom: 25px; }
         .cabinet-section h3 { font-size: 18px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-        .inventory-item, .order-item { background: var(--bg); padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .order-item { background: var(--bg); padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
         .status-pending { background: #facc15; color: #1e293b; }
         .status-approved { background: #22c55e; color: white; }
@@ -187,7 +187,7 @@
         .admin-table { width: 100%; border-collapse: collapse; color: #f0f0f0; }
         .admin-table th, .admin-table td { padding: 8px; text-align: left; border-bottom: 1px solid #2a2a2e; }
         input, textarea, select { background: #1a1a1e; color: white; border: 1px solid #2a2a2e; border-radius: 8px; padding: 8px; }
-        @media (max-width: 768px) { .admin-content { margin-left: 0; } .admin-sidebar { width: 100%; position: relative; } }
+        @media (max-width: 768px) { .admin-content { margin-left: 0; } .admin-sidebar { width: 100%; position: relative; } nav { padding: 0 20px; } }
     </style>
 </head>
 <body>
@@ -207,7 +207,7 @@
     </nav>
     <div class="support-fab" onclick="openSupportModal()">💬</div>
 
-    <!-- Головна (скорочена, але повна) -->
+    <!-- Головна скорочена, але повністю робоча -->
     <section id="home" class="active">
         <div class="hero">
             <div class="hero-badge"><div class="logo-dot"></div><span id="onlineBadge">247</span> гравців зараз онлайн</div>
@@ -252,16 +252,10 @@
                 <div class="cabinet-rank" id="profileRank">ГРАВЕЦЬ</div>
                 <div class="cabinet-stats"><div class="cabinet-stat"><div class="cabinet-stat-value" id="profileBalance">0</div><div>Баланс (₴)</div></div><div class="cabinet-stat"><div class="cabinet-stat-value" style="color:#22C55E">Онлайн</div><div>Статус</div></div></div>
                 
-                <!-- Блок: Схвалені покупки (інвентар) -->
+                <!-- Об'єднаний блок: всі замовлення (з будь-яким статусом) -->
                 <div class="cabinet-section">
-                    <h3>✅ Схвалені покупки</h3>
-                    <ul id="profileInventory" style="margin-top:15px"></ul>
-                </div>
-                
-                <!-- Блок: Всі замовлення (з різними статусами) -->
-                <div class="cabinet-section">
-                    <h3>📦 Мої замовлення</h3>
-                    <div id="profileOrders"></div>
+                    <h3>📦 Мої замовлення та покупки</h3>
+                    <div id="profileOrdersList"></div>
                 </div>
                 
                 <div style="display:flex; gap:12px; justify-content:center"><button class="btn-primary" onclick="openTopupModal()">💳 Поповнити</button><button class="btn-secondary" onclick="userLogout()">Вийти</button></div>
@@ -280,7 +274,7 @@
         </div>
     </section>
 
-    <!-- Форум (скорочений) -->
+    <!-- Форум (скорочено) -->
     <section id="forum">
         <div class="page-container">
             <div class="section-label">Спільнота</div>
@@ -405,11 +399,7 @@
                 document.getElementById('profileBalance').innerText = d.balance || 0;
                 document.getElementById('profileRank').innerText = d.rank || 'Гравець';
                 
-                // ✅ Схвалені покупки (інвентар)
-                let inv = d.inventory || [];
-                document.getElementById('profileInventory').innerHTML = inv.length ? inv.map(i=>`<li class="inventory-item">${i} <span>✓</span></li>`).join('') : '<li>Порожньо</li>';
-                
-                // 📦 Всі замовлення (з різними статусами)
+                // Об'єднаний список всіх замовлень користувача
                 const ordersSnap = await get(ref(db, 'orders'));
                 let userOrders = [];
                 if(ordersSnap.exists()){
@@ -424,11 +414,11 @@
                 const ordersHtml = userOrders.map(o => {
                     let statusClass = '', statusText = '';
                     if(o.status === 'pending') { statusClass = 'status-pending'; statusText = '⏳ Очікує'; }
-                    else if(o.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Схвалено'; }
+                    else if(o.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Схвалено (отримано)'; }
                     else { statusClass = 'status-rejected'; statusText = '❌ Відхилено'; }
                     return `<div class="order-item"><span><b>${o.item}</b> - ${o.amount}₴</span><span class="status-badge ${statusClass}">${statusText}</span></div>`;
                 }).join('');
-                document.getElementById('profileOrders').innerHTML = ordersHtml || '<div style="color:var(--text3);">Немає замовлень</div>';
+                document.getElementById('profileOrdersList').innerHTML = ordersHtml || '<div style="color:var(--text3); text-align:center;">У вас поки що немає замовлень</div>';
                 return;
             }
         }
@@ -476,7 +466,7 @@
         closeTopupModal();
     };
 
-    // Магазин – створення замовлення (без списання, без додавання в інвентар)
+    // Магазин – створення замовлення (без списання коштів)
     window.buyItem = async (name, price) => {
         if(!currentUser){ toast('Увійдіть в кабінет'); showPage('cabinet'); return; }
         const userSnap = await get(ref(db, `users/${currentUser}`));
@@ -511,7 +501,7 @@
         inventory.push(item);
         await update(userRef, { balance: currentBalance - amount, inventory });
         await update(orderRef, { status: 'approved' });
-        toast(`✅ Замовлення ${item} схвалено! Кошти списано, товар додано в інвентар.`);
+        toast(`✅ Замовлення ${item} схвалено! Кошти списано, товар додано.`);
         if(userId === currentUser) updateCabinetUI();
         loadAdminDashboard();
         await addLog(`Схвалено замовлення ${item} для ${userId}`);
@@ -524,7 +514,7 @@
         await addLog(`Відхилено замовлення ${orderId}`);
     };
     
-    // Адмін-панель
+    // Адмін-панель (завантаження)
     document.getElementById('adminBtn').onclick = () => { if(!isAdmin){ toast('Доступ заборонено. Увійдіть як vortex'); showPage('cabinet'); return; } document.body.classList.add('admin-mode'); loadAdminDashboard(); };
     document.getElementById('exitAdminBtn').onclick = () => { document.body.classList.remove('admin-mode'); };
     
@@ -559,7 +549,7 @@
         // Заявки на поповнення
         let reqs=''; if(topupsSnap.exists()) for(let id in topupsSnap.val()){ let u=topupsSnap.val()[id]; if(u.status!=='approved') reqs+=`<div class="topup-item"><b>${u.username}</b> - ${u.amount}₴<br>Email: ${u.email}<br><small>${u.time}</small><br><button class="btn-admin" onclick="approveTopup('${id}','${u.username}',${u.amount})">✅ Підтвердити</button> <button class="btn-admin" onclick="rejectTopup('${id}')">❌ Відхилити</button></div>`; }
         document.getElementById('topupsList').innerHTML=reqs||'Немає';
-        // Замовлення (лише pending)
+        // Замовлення (pending)
         let ordHtml = ''; if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o=ordersSnap.val()[id]; if(o.status === 'pending') ordHtml+=`<div class="order-item-admin"><b>${o.userId}</b> - ${o.item} (${o.amount}₴)<br><small>${o.timeStr}</small><br><button class="btn-admin" onclick="approveOrder('${id}','${o.userId}','${o.item}',${o.amount})">✅ Схвалити</button> <button class="btn-admin" onclick="rejectOrder('${id}')">❌ Відхилити</button></div>`; }
         document.getElementById('ordersList').innerHTML=ordHtml||'Немає очікуючих замовлень';
         // Користувачі

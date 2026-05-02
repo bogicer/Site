@@ -33,7 +33,7 @@
         body.admin-mode .admin-sidebar { display: flex; }
         body.admin-mode .admin-content { display: block; }
         
-        /* Стилі основного сайту (незмінні) */
+        /* Навігація */
         nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 68px;
             background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
@@ -58,7 +58,8 @@
         .ip-card { display: inline-flex; background: var(--bg); border: 2px solid var(--border2); border-radius: 14px; overflow: hidden; margin-bottom: 35px; }
         .ip-text { padding: 14px 28px; font-family: 'Syne', sans-serif; font-weight: 700; border-right: 2px solid var(--border2); }
         .ip-copy { padding: 14px 24px; background: transparent; border: none; font-weight: 800; color: var(--orange); cursor: pointer; }
-        .btn-primary { background: var(--orange); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        .btn-primary { background: var(--orange); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(242,100,25,0.4); }
         .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border2); padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; }
         .stats { background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px; display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
         .stat { text-align: center; }
@@ -84,7 +85,8 @@
         .cabinet-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .cabinet-stat { background: white; border: 1px solid var(--border); padding: 18px; border-radius: 14px; }
         .cabinet-stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--orange); }
-        .cabinet-inventory, .cabinet-orders { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: left; margin-bottom: 25px; }
+        .cabinet-section { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: left; margin-bottom: 25px; }
+        .cabinet-section h3 { font-size: 18px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; display: flex; align-items: center; gap: 8px; }
         .inventory-item, .order-item { background: var(--bg); padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
         .status-pending { background: #facc15; color: #1e293b; }
@@ -97,7 +99,7 @@
         .auth-form.active { display: block; }
         .auth-input { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 15px; background: white; }
         
-        /* Магазин (коротко) */
+        /* Магазин */
         .shop-servers, .shop-categories { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
         .server-btn, .category-btn { background: var(--bg2); border: 1px solid var(--border); padding: 8px 20px; border-radius: 40px; font-weight: 800; cursor: pointer; }
         .server-btn.active, .category-btn.active { background: var(--orange); color: white; }
@@ -108,7 +110,7 @@
         .product-price { font-weight: 800; color: var(--orange); font-size: 20px; }
         .buy-btn { background: var(--orange); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
         
-        /* Форум, правила (спрощено) */
+        /* Форум, правила */
         .forum-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; margin-bottom: 30px; }
         .forum-cat { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; }
         .topics-list { display: flex; flex-direction: column; gap: 10px; }
@@ -126,7 +128,7 @@
         .toast { position: fixed; bottom: 90px; right: 20px; background: var(--text); color: white; padding: 12px 20px; border-radius: 12px; z-index: 3000; transform: translateY(80px); opacity: 0; transition: 0.25s; }
         .toast.show { transform: translateY(0); opacity: 1; }
         
-        /* ========== АДМІН-ПАНЕЛЬ – ЧОРНИЙ ФОН, БІЛИЙ ТЕКСТ ========== */
+        /* Адмін-панель – чорний фон, білий текст */
         .admin-sidebar {
             width: 260px;
             background: #0a0a0c;
@@ -205,7 +207,7 @@
     </nav>
     <div class="support-fab" onclick="openSupportModal()">💬</div>
 
-    <!-- Головна сторінка -->
+    <!-- Головна (скорочена, але повна) -->
     <section id="home" class="active">
         <div class="hero">
             <div class="hero-badge"><div class="logo-dot"></div><span id="onlineBadge">247</span> гравців зараз онлайн</div>
@@ -250,10 +252,17 @@
                 <div class="cabinet-rank" id="profileRank">ГРАВЕЦЬ</div>
                 <div class="cabinet-stats"><div class="cabinet-stat"><div class="cabinet-stat-value" id="profileBalance">0</div><div>Баланс (₴)</div></div><div class="cabinet-stat"><div class="cabinet-stat-value" style="color:#22C55E">Онлайн</div><div>Статус</div></div></div>
                 
-                <div class="cabinet-inventory"><div>🎁 Мої покупки (схвалені)</div><ul id="profileInventory" style="margin-top:15px"></ul></div>
+                <!-- Блок: Схвалені покупки (інвентар) -->
+                <div class="cabinet-section">
+                    <h3>✅ Схвалені покупки</h3>
+                    <ul id="profileInventory" style="margin-top:15px"></ul>
+                </div>
                 
-                <!-- Всі замовлення в одному блоці -->
-                <div class="cabinet-orders"><div>📦 Мої замовлення (всі статуси)</div><div id="profileOrders" style="margin-top:15px"></div></div>
+                <!-- Блок: Всі замовлення (з різними статусами) -->
+                <div class="cabinet-section">
+                    <h3>📦 Мої замовлення</h3>
+                    <div id="profileOrders"></div>
+                </div>
                 
                 <div style="display:flex; gap:12px; justify-content:center"><button class="btn-primary" onclick="openTopupModal()">💳 Поповнити</button><button class="btn-secondary" onclick="userLogout()">Вийти</button></div>
             </div>
@@ -271,7 +280,7 @@
         </div>
     </section>
 
-    <!-- Форум -->
+    <!-- Форум (скорочений) -->
     <section id="forum">
         <div class="page-container">
             <div class="section-label">Спільнота</div>
@@ -317,7 +326,7 @@
     <div id="dashboardTab"><div class="admin-card"><h2>📊 Статистика</h2><div class="admin-stats" id="adminStats"></div></div><div class="admin-card"><h3>Логи</h3><div id="adminLogs" class="console-log"></div></div></div>
     <div id="ticketsTab" style="display:none;"><div class="admin-card"><h2>🎫 Тікети</h2><div id="ticketsList"></div></div></div>
     <div id="topupsTab" style="display:none;"><div class="admin-card"><h2>💰 Заявки на поповнення</h2><div id="topupsList"></div></div></div>
-    <div id="ordersTab" style="display:none;"><div class="admin-card"><h2>📦 Замовлення (очікують підтвердження)</h2><div id="ordersList"></div></div></div>
+    <div id="ordersTab" style="display:none;"><div class="admin-card"><h2>📦 Замовлення (очікують)</h2><div id="ordersList"></div></div></div>
     <div id="usersTab" style="display:none;"><div class="admin-card"><h2>👥 Користувачі</h2><div id="usersList"></div></div></div>
     <div id="consoleTab" style="display:none;"><div class="admin-card"><h2>🖥️ Консоль</h2><input type="text" id="consoleCommand" placeholder="give balance <нік> <сума>" style="width:100%;"><button class="btn-admin" onclick="execConsoleCommand()">Виконати</button><div id="consoleOutput" class="console-log"></div></div></div>
     <div id="settingsTab" style="display:none;"><div class="admin-card"><h2>⚙️ Налаштування</h2><button class="btn-admin" onclick="exportData()">📁 Експорт</button><button class="btn-admin" onclick="clearAllData()" style="background:#dc2626">⚠️ Очистити все</button></div></div>
@@ -396,9 +405,11 @@
                 document.getElementById('profileBalance').innerText = d.balance || 0;
                 document.getElementById('profileRank').innerText = d.rank || 'Гравець';
                 
+                // ✅ Схвалені покупки (інвентар)
                 let inv = d.inventory || [];
                 document.getElementById('profileInventory').innerHTML = inv.length ? inv.map(i=>`<li class="inventory-item">${i} <span>✓</span></li>`).join('') : '<li>Порожньо</li>';
                 
+                // 📦 Всі замовлення (з різними статусами)
                 const ordersSnap = await get(ref(db, 'orders'));
                 let userOrders = [];
                 if(ordersSnap.exists()){
@@ -465,7 +476,7 @@
         closeTopupModal();
     };
 
-    // Магазин – створення замовлення
+    // Магазин – створення замовлення (без списання, без додавання в інвентар)
     window.buyItem = async (name, price) => {
         if(!currentUser){ toast('Увійдіть в кабінет'); showPage('cabinet'); return; }
         const userSnap = await get(ref(db, `users/${currentUser}`));
@@ -500,7 +511,7 @@
         inventory.push(item);
         await update(userRef, { balance: currentBalance - amount, inventory });
         await update(orderRef, { status: 'approved' });
-        toast(`✅ Замовлення ${item} схвалено! Кошти списано.`);
+        toast(`✅ Замовлення ${item} схвалено! Кошти списано, товар додано в інвентар.`);
         if(userId === currentUser) updateCabinetUI();
         loadAdminDashboard();
         await addLog(`Схвалено замовлення ${item} для ${userId}`);
@@ -548,7 +559,7 @@
         // Заявки на поповнення
         let reqs=''; if(topupsSnap.exists()) for(let id in topupsSnap.val()){ let u=topupsSnap.val()[id]; if(u.status!=='approved') reqs+=`<div class="topup-item"><b>${u.username}</b> - ${u.amount}₴<br>Email: ${u.email}<br><small>${u.time}</small><br><button class="btn-admin" onclick="approveTopup('${id}','${u.username}',${u.amount})">✅ Підтвердити</button> <button class="btn-admin" onclick="rejectTopup('${id}')">❌ Відхилити</button></div>`; }
         document.getElementById('topupsList').innerHTML=reqs||'Немає';
-        // Замовлення (pending)
+        // Замовлення (лише pending)
         let ordHtml = ''; if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o=ordersSnap.val()[id]; if(o.status === 'pending') ordHtml+=`<div class="order-item-admin"><b>${o.userId}</b> - ${o.item} (${o.amount}₴)<br><small>${o.timeStr}</small><br><button class="btn-admin" onclick="approveOrder('${id}','${o.userId}','${o.item}',${o.amount})">✅ Схвалити</button> <button class="btn-admin" onclick="rejectOrder('${id}')">❌ Відхилити</button></div>`; }
         document.getElementById('ordersList').innerHTML=ordHtml||'Немає очікуючих замовлень';
         // Користувачі

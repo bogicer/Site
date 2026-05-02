@@ -22,18 +22,18 @@
             --admin-border: #2a2a2e;
         }
         body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body.admin-mode { background: var(--admin-bg); color: #f0f0f0; }
         
-        /* Основний сайт */
+        /* Основний сайт – видимий */
         .main-site { display: block; }
         
-        /* Адмін-панель – темна з білим текстом */
+        /* Адмін-панель – прихована за замовчуванням */
         .admin-sidebar, .admin-content { display: none; }
         body.admin-mode .main-site { display: none; }
         body.admin-mode .admin-sidebar { display: flex; }
         body.admin-mode .admin-content { display: block; }
-        body.admin-mode { background: var(--admin-bg); color: #f0f0f0; }
         
-        /* Навігація основного сайту */
+        /* Стилі основного сайту (незмінні) */
         nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 68px;
             background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
@@ -58,8 +58,7 @@
         .ip-card { display: inline-flex; background: var(--bg); border: 2px solid var(--border2); border-radius: 14px; overflow: hidden; margin-bottom: 35px; }
         .ip-text { padding: 14px 28px; font-family: 'Syne', sans-serif; font-weight: 700; border-right: 2px solid var(--border2); }
         .ip-copy { padding: 14px 24px; background: transparent; border: none; font-weight: 800; color: var(--orange); cursor: pointer; }
-        .btn-primary { background: var(--orange); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(242,100,25,0.4); }
+        .btn-primary { background: var(--orange); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; }
         .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border2); padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; }
         .stats { background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px; display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
         .stat { text-align: center; }
@@ -98,7 +97,7 @@
         .auth-form.active { display: block; }
         .auth-input { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 15px; background: white; }
         
-        /* Магазин */
+        /* Магазин (коротко) */
         .shop-servers, .shop-categories { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
         .server-btn, .category-btn { background: var(--bg2); border: 1px solid var(--border); padding: 8px 20px; border-radius: 40px; font-weight: 800; cursor: pointer; }
         .server-btn.active, .category-btn.active { background: var(--orange); color: white; }
@@ -109,7 +108,7 @@
         .product-price { font-weight: 800; color: var(--orange); font-size: 20px; }
         .buy-btn { background: var(--orange); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
         
-        /* Форум та Правила (спрощено) */
+        /* Форум, правила (спрощено) */
         .forum-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; margin-bottom: 30px; }
         .forum-cat { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; }
         .topics-list { display: flex; flex-direction: column; gap: 10px; }
@@ -127,7 +126,7 @@
         .toast { position: fixed; bottom: 90px; right: 20px; background: var(--text); color: white; padding: 12px 20px; border-radius: 12px; z-index: 3000; transform: translateY(80px); opacity: 0; transition: 0.25s; }
         .toast.show { transform: translateY(0); opacity: 1; }
         
-        /* ========== АДМІН-ПАНЕЛЬ – ТЕМНА, БІЛИЙ ТЕКСТ ========== */
+        /* ========== АДМІН-ПАНЕЛЬ – ЧОРНИЙ ФОН, БІЛИЙ ТЕКСТ ========== */
         .admin-sidebar {
             width: 260px;
             background: #0a0a0c;
@@ -142,7 +141,7 @@
         }
         .admin-logo { font-family: 'Syne', sans-serif; font-size: 20px; margin-bottom: 30px; border-bottom: 1px solid #2a2a2e; padding-bottom: 16px; color: white; }
         .admin-logo span { color: var(--orange); }
-        .admin-nav-item { padding: 10px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; color: #ccc; }
+        .admin-nav-item { padding: 10px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; color: #ccc; transition: 0.2s; }
         .admin-nav-item:hover, .admin-nav-item.active { background: #1f1f24; color: var(--orange); }
         .admin-content { margin-left: 260px; padding: 20px; }
         .admin-card {
@@ -171,16 +170,26 @@
             border-left: 3px solid var(--orange);
             color: #f0f0f0;
         }
-        .btn-admin { background: var(--orange); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin: 4px; }
-        .console-log { background: #050507; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 12px; height: 200px; overflow-y: auto; color: #0f0; }
+        .btn-admin { background: var(--orange); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin: 4px; transition: 0.2s; }
+        .btn-admin:hover { background: #e05510; }
+        .console-log {
+            background: #050507;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            color: #0f0;
+        }
         .admin-table { width: 100%; border-collapse: collapse; color: #f0f0f0; }
         .admin-table th, .admin-table td { padding: 8px; text-align: left; border-bottom: 1px solid #2a2a2e; }
+        input, textarea, select { background: #1a1a1e; color: white; border: 1px solid #2a2a2e; border-radius: 8px; padding: 8px; }
         @media (max-width: 768px) { .admin-content { margin-left: 0; } .admin-sidebar { width: 100%; position: relative; } }
     </style>
 </head>
 <body>
 
-<!-- ОСНОВНИЙ САЙТ -->
 <div class="main-site">
     <nav>
         <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>Spire<span>World</span></div>
@@ -196,6 +205,7 @@
     </nav>
     <div class="support-fab" onclick="openSupportModal()">💬</div>
 
+    <!-- Головна сторінка -->
     <section id="home" class="active">
         <div class="hero">
             <div class="hero-badge"><div class="logo-dot"></div><span id="onlineBadge">247</span> гравців зараз онлайн</div>
@@ -224,6 +234,7 @@
         </div>
     </section>
 
+    <!-- Кабінет -->
     <section id="cabinet">
         <div class="page-container">
             <div class="section-label">Твій профіль</div>
@@ -249,6 +260,7 @@
         </div>
     </section>
 
+    <!-- Магазин -->
     <section id="shop">
         <div class="page-container">
             <div class="section-label">Магазин</div>
@@ -259,6 +271,7 @@
         </div>
     </section>
 
+    <!-- Форум -->
     <section id="forum">
         <div class="page-container">
             <div class="section-label">Спільнота</div>
@@ -269,6 +282,7 @@
         </div>
     </section>
 
+    <!-- Правила -->
     <section id="rules">
         <div class="page-container">
             <div class="section-label">Правила</div>
@@ -287,7 +301,7 @@
     </footer>
 </div>
 
-<!-- АДМІН-ПАНЕЛЬ (темна, білий текст) -->
+<!-- Адмін-панель (чорний фон, білий текст) -->
 <div class="admin-sidebar" id="adminSidebar">
     <div class="admin-logo">Spire<span>ADMIN</span></div>
     <div class="admin-nav-item active" data-tab="dashboard">📊 Дашборд</div>
@@ -305,7 +319,7 @@
     <div id="topupsTab" style="display:none;"><div class="admin-card"><h2>💰 Заявки на поповнення</h2><div id="topupsList"></div></div></div>
     <div id="ordersTab" style="display:none;"><div class="admin-card"><h2>📦 Замовлення (очікують підтвердження)</h2><div id="ordersList"></div></div></div>
     <div id="usersTab" style="display:none;"><div class="admin-card"><h2>👥 Користувачі</h2><div id="usersList"></div></div></div>
-    <div id="consoleTab" style="display:none;"><div class="admin-card"><h2>🖥️ Консоль</h2><input type="text" id="consoleCommand" placeholder="give balance <нік> <сума>" style="width:100%; background:#1a1a1e; color:white; border:1px solid #2a2a2e; padding:8px;"><button class="btn-admin" onclick="execConsoleCommand()">Виконати</button><div id="consoleOutput" class="console-log"></div></div></div>
+    <div id="consoleTab" style="display:none;"><div class="admin-card"><h2>🖥️ Консоль</h2><input type="text" id="consoleCommand" placeholder="give balance <нік> <сума>" style="width:100%;"><button class="btn-admin" onclick="execConsoleCommand()">Виконати</button><div id="consoleOutput" class="console-log"></div></div></div>
     <div id="settingsTab" style="display:none;"><div class="admin-card"><h2>⚙️ Налаштування</h2><button class="btn-admin" onclick="exportData()">📁 Експорт</button><button class="btn-admin" onclick="clearAllData()" style="background:#dc2626">⚠️ Очистити все</button></div></div>
 </div>
 
@@ -382,11 +396,9 @@
                 document.getElementById('profileBalance').innerText = d.balance || 0;
                 document.getElementById('profileRank').innerText = d.rank || 'Гравець';
                 
-                // Інвентар
                 let inv = d.inventory || [];
                 document.getElementById('profileInventory').innerHTML = inv.length ? inv.map(i=>`<li class="inventory-item">${i} <span>✓</span></li>`).join('') : '<li>Порожньо</li>';
                 
-                // Замовлення (всі статуси) – один список
                 const ordersSnap = await get(ref(db, 'orders'));
                 let userOrders = [];
                 if(ordersSnap.exists()){
@@ -536,11 +548,11 @@
         // Заявки на поповнення
         let reqs=''; if(topupsSnap.exists()) for(let id in topupsSnap.val()){ let u=topupsSnap.val()[id]; if(u.status!=='approved') reqs+=`<div class="topup-item"><b>${u.username}</b> - ${u.amount}₴<br>Email: ${u.email}<br><small>${u.time}</small><br><button class="btn-admin" onclick="approveTopup('${id}','${u.username}',${u.amount})">✅ Підтвердити</button> <button class="btn-admin" onclick="rejectTopup('${id}')">❌ Відхилити</button></div>`; }
         document.getElementById('topupsList').innerHTML=reqs||'Немає';
-        // Замовлення (ocikyють)
+        // Замовлення (pending)
         let ordHtml = ''; if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o=ordersSnap.val()[id]; if(o.status === 'pending') ordHtml+=`<div class="order-item-admin"><b>${o.userId}</b> - ${o.item} (${o.amount}₴)<br><small>${o.timeStr}</small><br><button class="btn-admin" onclick="approveOrder('${id}','${o.userId}','${o.item}',${o.amount})">✅ Схвалити</button> <button class="btn-admin" onclick="rejectOrder('${id}')">❌ Відхилити</button></div>`; }
         document.getElementById('ordersList').innerHTML=ordHtml||'Немає очікуючих замовлень';
         // Користувачі
-        let usr='<tr><td><th>Нік</th><th>Баланс</th><th>Ранг</th><th>Дія</th></tr>';
+        let usr='<table class="admin-table"><tr><th>Нік</th><th>Баланс</th><th>Ранг</th><th>Дія</th></tr>';
         if(usersSnap.exists()) for(let nick in usersSnap.val()){ let u=usersSnap.val()[nick]; usr+=`<tr><td>${nick}</td><td>${u.balance}₴</td><td>${u.rank}</td><td><button class="btn-admin" onclick="editUser('${nick}')">💰 Змінити баланс</button></td></tr>`; }
         usr+='</table>'; document.getElementById('usersList').innerHTML=usr;
     }
@@ -590,7 +602,7 @@
     renderForum();
     
     // Правила
-    const rulesArr = [{num:'01',title:'Повага',desc:'Не ображайте інших.'},{num:'02',title:'Чити',desc:'Бан назавжди.'}];
+    const rulesArr = [{num:'01',title:'Повага',desc:'Не ображайте інших.'},{num:'02',title:'Чити',desc:'Бан назавжди.'},{num:'03',title:'Гріферство',desc:'Руйнування чужих будівель заборонено.'}];
     function renderRules(){ document.getElementById('rulesList').innerHTML = rulesArr.map(r=>`<div class="rule"><div class="rule-number">${r.num}</div><div><h3>${r.title}</h3><p>${r.desc}</p></div></div>`).join(''); }
     renderRules();
     

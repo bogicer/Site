@@ -372,8 +372,56 @@
 }
     async function sendFormSubmit(to, subject, message, replyTo) { const fd = new FormData(); fd.append('email', to); fd.append('subject', subject); fd.append('message', message); if(replyTo) fd.append('_replyto', replyTo); fd.append('_captcha', 'false'); try { await fetch('https://formsubmit.co/ajax/' + to, { method: 'POST', body: fd }); } catch(e){} }
     window.sendSupport = async () => { let name = document.getElementById('supportName').value.trim(); let email = document.getElementById('supportEmail').value.trim(); let msg = document.getElementById('supportMessage').value.trim(); if(!name || !email || !msg){ toast('Заповніть всі поля'); return; } await push(ref(db, 'support_tickets'), { nickname: name, email, message: msg, time: new Date().toLocaleString(), status:'new' }); await sendFormSubmit('simpleworld237@gmail.com', `Тікет від ${name}`, msg, email); toast('Тікет відправлено!'); closeSupportModal(); };
-    window.requestTopup = async () => { if(!currentUser){ toast('Увійдіть в кабінет'); return; } let amount = document.getElementById('topupAmount').value.trim(); let email = document.getElementById('topupEmail').value.trim(); if(!amount || amount<10){ toast('Сума від 10₴'); return; } if(!email){ toast('Введіть Email'); return; } await push(ref(db, 'topup_requests'), { username: currentUser, amount: parseInt(amount), email, time: new Date().toLocaleString(), status:'pending' }); toast(`Заявку на ${amount}₴ відправлено!`); closeTopupModal(); };
-
+    window.requestTopup = async () => {
+    if(!currentUser){ 
+        toast('❌ Увійдіть в кабінет'); 
+        return; 
+    }
+    
+    let amount = document.getElementById('topupAmount').value.trim();
+    let email = document.getElementById('topupEmail').value.trim();
+    
+    if(!amount || amount<10){ 
+        toast('❌ Сума від 10₴'); 
+        return; 
+    }
+    if(!email){ 
+        toast('❌ Введіть Email'); 
+        return; 
+    }
+    
+    // Генерируем уникальный номер заявки
+    const orderId = 'SPW-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+    
+    // Сохраняем заявку в Firebase
+    const reqRef = push(ref(db, 'topup_requests'));
+    await set(reqRef, { 
+        username: currentUser, 
+        amount: parseInt(amount), 
+        email: email, 
+        orderId: orderId,
+        time: new Date().toLocaleString(), 
+        status: 'pending' 
+    });
+    
+    // Отправляем письмо пользователю с реквизитами
+    await sendPaymentEmail(email, currentUser, amount, orderId);
+    
+    // Отправляем уведомление администратору
+    const adminMsg = `📋 НОВА ЗАЯВКА №${orderId}\n👤 Користувач: ${currentUser}\n💰 Сума: ${amount}₴\n📧 Email: ${email}\n🕐 Час: ${new Date().toLocaleString()}`;
+    const adminFormData = new FormData();
+    adminFormData.append('email', 'simpleworld237@gmail.com');
+    adminFormData.append('subject', `💰 Нова заявка №${orderId}`);
+    adminFormData.append('message', adminMsg);
+    adminFormData.append('_captcha', 'false');
+    await fetch('https://formsubmit.co/ajax/simpleworld237@gmail.com', { method: 'POST', body: adminFormData });
+    
+    toast(`✅ Заявку №${orderId} на ${amount}₴ відправлено! Реквізити надіслано на ${email}`);
+    
+    document.getElementById('topupAmount').value = '';
+    document.getElementById('topupEmail').value = '';
+    closeTopupModal();
+};
     const shopData = { grief: { ranks: [{icon:'🔪',name:'GRIEFER',price:99},{icon:'🔥',name:'WARLORD',price:199}], items: [{icon:'⚔️',name:'Меч Бога',price:49}], currency: [{icon:'💰',name:'10000 GC',price:29}] }, anarchy: { ranks: [{icon:'☠️',name:'SURVIVOR',price:79}], items: [], currency: [] }, bedwars: { ranks: [{icon:'🗡️',name:'IRON',price:49}], items: [], currency: [] } };
     let curSrv = 'grief', curCat = 'ranks';
     window.changeServer = (s, btn) => { curSrv = s; document.querySelectorAll('.server-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderShop(); };
@@ -434,6 +482,55 @@
     
     updateCabinetUI();
     checkAdmin();
+    // Функция отправки письма пользователю с реквизитами
+async function sendPaymentEmail(userEmail, username, amount, orderId) {
+    // Ваши реквизиты для оплаты (замените на свои)
+    const bankDetails = `
+💳 Реквізити для оплати:
+🏦 МоноБанк
+💳 Банка: 5565 8585 9582 1265
+👤 Отримувач: Іваненко І.І.
+📱 Для запитань: Напишіть в підтримку на сайті!
+    `;
+    
+    const subject = `💰 Заявка на поповнення #${orderId} - SpireWorld`;
+    const message = `
+Шановний(а) ${username}!
+
+Ви створили заявку на поповнення балансу в розмірі ${amount} ₴.
+
+${bankDetails}
+
+📌 Номер вашої заявки: ${orderId}
+👤 Ім'я користувача: ${username}
+💵 Сума: ${amount} ₴
+
+Після оплати, будь ласка, повідомте адміністратора (натисніть "Відповісти" на цей лист).
+
+Ваш замовлення буде оброблено протягом 24 годин після підтвердження оплати.
+
+Дякуємо, що обираєте SpireWorld!
+    `;
+    
+    // Отправка через FormSubmit
+    const formData = new FormData();
+    formData.append('email', userEmail);
+    formData.append('subject', subject);
+    formData.append('message', message);
+    formData.append('_captcha', 'false');
+    
+    try {
+        await fetch('https://formsubmit.co/ajax/simpleworld237@gmail.com', {
+            method: 'POST',
+            body: formData
+        });
+        console.log('✅ Письмо с реквизитами отправлено на', userEmail);
+        return true;
+    } catch(e) {
+        console.error('Ошибка отправки письма:', e);
+        return false;
+    }
+}
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>SpireWorld — повна адмін-панель</title>
+    <title>SpireWorld — повна версія</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,73 +30,81 @@
         body.admin-mode .admin-sidebar { display: flex; flex-direction: column; }
         body.admin-mode .admin-content { display: block; }
         
-        /* Навігація */
         nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
             background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border); 
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 clamp(15px, 5vw, 40px);
-            min-height: 60px;
+            padding: 0 40px;
+            min-height: 68px;
         }
-        .logo { font-family: 'Syne', sans-serif; font-size: clamp(18px, 5vw, 22px); font-weight: 800; cursor: pointer; display: flex; gap: 8px; align-items: center; }
+        .logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; cursor: pointer; display: flex; gap: 10px; align-items: center; }
         .logo span { color: var(--orange); }
         .logo-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; }
-        
         .burger { display: none; flex-direction: column; cursor: pointer; gap: 5px; background: none; border: none; padding: 10px; }
-        .burger span { width: 25px; height: 3px; background: var(--text); border-radius: 3px; transition: 0.3s; }
-        .nav-links { display: flex; gap: 8px; list-style: none; flex-wrap: wrap; transition: 0.3s; }
-        .nav-links a { color: var(--text2); text-decoration: none; font-size: clamp(12px, 3.5vw, 14px); font-weight: 700; padding: 8px clamp(10px, 3vw, 16px); border-radius: 10px; cursor: pointer; }
+        .burger span { width: 25px; height: 3px; background: var(--text); border-radius: 3px; }
+        .nav-links { display: flex; gap: 8px; list-style: none; flex-wrap: wrap; }
+        .nav-links a { color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 700; padding: 8px 16px; border-radius: 10px; cursor: pointer; }
         .nav-links a:hover { background: var(--orange-pale); color: var(--orange); }
         .nav-links .nav-btn { background: var(--orange); color: white !important; }
         
         @media (max-width: 768px) {
             .burger { display: flex; }
             .nav-links {
-                position: fixed; top: 60px; left: -100%; width: 100%; background: white;
-                flex-direction: column; padding: 20px; gap: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-                transition: left 0.3s; z-index: 999;
+                position: fixed; top: 68px; left: -100%; width: 100%; background: white;
+                flex-direction: column; padding: 20px; gap: 12px; transition: left 0.3s; z-index: 999;
             }
             .nav-links a { text-align: center; }
             .nav-links.active { left: 0; }
             .burger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 8px); }
             .burger.active span:nth-child(2) { opacity: 0; }
             .burger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -8px); }
+            nav { padding: 0 20px; }
         }
         
-        section { display: none; min-height: 100vh; padding-top: 70px; }
+        section { display: none; min-height: 100vh; padding-top: 68px; }
         section.active { display: block; }
         #home { background: var(--white); }
         
-        /* Головна (скорочена) */
-        .hero { max-width: 1000px; margin: 0 auto; padding: clamp(40px, 10vw, 80px) clamp(20px, 5vw, 40px) 0; text-align: center; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--orange-pale); border-radius: 100px; padding: 6px 18px; font-size: 12px; font-weight: 800; color: var(--orange); margin-bottom: 30px; }
-        h1 { font-family: 'Syne', sans-serif; font-size: clamp(32px, 10vw, 100px); font-weight: 800; line-height: 1.1; letter-spacing: -2px; }
+        /* Головна */
+        .hero { max-width: 1000px; margin: 0 auto; padding: 80px 40px 0; text-align: center; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--orange-pale); border: 1px solid #FFD9C0; border-radius: 100px; padding: 6px 18px; font-size: 12px; font-weight: 800; color: var(--orange); margin-bottom: 30px; }
+        h1 { font-family: 'Syne', sans-serif; font-size: clamp(48px, 8vw, 100px); font-weight: 800; line-height: 1; letter-spacing: -3px; }
         h1 span { color: var(--orange); }
-        .ip-card { display: inline-flex; flex-wrap: wrap; justify-content: center; background: var(--bg); border: 2px solid var(--border2); border-radius: 14px; overflow: hidden; margin-bottom: 30px; }
-        .ip-text { padding: 12px 28px; font-size: 18px; border-right: 2px solid var(--border2); }
-        .ip-copy { padding: 12px 24px; background: transparent; border: none; font-weight: 800; color: var(--orange); cursor: pointer; }
-        .btn-primary { background: var(--orange); color: white; border: none; padding: 12px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .hero-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px; }
-        .stats { background: var(--bg); padding: 40px; display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+        .hero-sub { font-size: 14px; font-weight: 700; color: var(--text3); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; }
+        .ip-card { display: inline-flex; background: var(--bg); border: 2px solid var(--border2); border-radius: 14px; overflow: hidden; margin-bottom: 35px; }
+        .ip-text { padding: 14px 28px; font-family: 'Syne', sans-serif; font-weight: 700; border-right: 2px solid var(--border2); }
+        .ip-copy { padding: 14px 24px; background: transparent; border: none; font-weight: 800; color: var(--orange); cursor: pointer; }
+        .btn-primary { background: var(--orange); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(242,100,25,0.4); }
+        .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border2); padding: 14px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        .hero-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 60px; }
+        .stats { background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px; display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+        .stat { text-align: center; }
         .stat-number { font-family: 'Syne', sans-serif; font-size: 38px; font-weight: 800; color: var(--orange); }
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; margin-top: 5px; }
         .features { padding: 70px 40px; max-width: 1100px; margin: 0 auto; }
-        .section-title { font-family: 'Syne', sans-serif; font-size: clamp(22px, 5vw, 42px); font-weight: 800; margin-bottom: 30px; }
+        .section-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
+        .section-title { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 42px); font-weight: 800; margin-bottom: 40px; }
+        .section-title span { color: var(--orange); }
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-        .feature-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+        .feature-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: 0.2s; }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
         .feature-icon { font-size: 36px; margin-bottom: 12px; }
-        .feature-title { font-weight: 800; }
+        .feature-title { font-family: 'Syne', sans-serif; font-weight: 800; margin-bottom: 8px; }
+        .feature-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
         .page-container { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
         
         /* Кабінет */
         .cabinet-box { max-width: 820px; margin: 0 auto; background: var(--bg); border: 1px solid var(--border); border-radius: 24px; padding: 35px; text-align: center; }
         .cabinet-avatar { width: 90px; height: 90px; background: var(--orange-pale); border: 2px solid var(--orange); border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 15px; }
-        .cabinet-name { font-size: 26px; font-weight: 800; }
+        .cabinet-name { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; }
         .cabinet-rank { display: inline-block; background: #F59E0B; color: white; padding: 5px 14px; border-radius: 100px; font-size: 11px; font-weight: 800; margin-bottom: 25px; }
         .cabinet-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .cabinet-stat { background: white; border: 1px solid var(--border); padding: 18px; border-radius: 14px; }
-        .cabinet-stat-value { font-size: 28px; font-weight: 800; color: var(--orange); }
+        .cabinet-stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--orange); }
         .cabinet-section { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: left; margin-bottom: 25px; }
+        .cabinet-section h3 { font-size: 18px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
         .order-item { background: var(--bg); padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
         .status-pending { background: #facc15; color: #1e293b; }
@@ -107,49 +115,65 @@
         .auth-tab.active { color: var(--orange); border-color: var(--orange); }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
-        .auth-input { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 15px; background: white; }
+        .auth-input { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 15px; background: white; font-size: 14px; }
         
-        /* Магазин, форум, правила (спрощено) */
+        /* Магазин */
         .shop-servers, .shop-categories { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .server-btn, .category-btn { background: #F2EDE6; border: 1px solid var(--border); padding: 8px 20px; border-radius: 40px; font-weight: 800; cursor: pointer; }
-        .server-btn.active, .category-btn.active { background: var(--orange); color: white; }
+        .server-btn, .category-btn { background: #F2EDE6; border: 1px solid var(--border); padding: 8px 20px; border-radius: 40px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .server-btn.active, .server-btn:hover, .category-btn.active, .category-btn:hover { background: var(--orange); color: white; }
         .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .product { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 16px; text-align: center; }
+        .product { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 16px; text-align: center; transition: 0.2s; }
+        .product:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .product-icon { font-size: 48px; }
-        .product-name { font-weight: 800; }
+        .product-name { font-weight: 800; font-size: 18px; margin: 8px 0; }
         .product-price { font-weight: 800; color: var(--orange); font-size: 20px; }
         .buy-btn { background: var(--orange); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
+        
+        /* Форум */
         .forum-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-bottom: 30px; }
-        .forum-cat { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; }
-        .new-topic { background: var(--orange); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-bottom: 20px; }
+        .forum-cat { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .forum-cat span:first-child { font-size: 28px; }
+        .forum-cat span:last-child { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--orange); }
+        .new-topic { background: var(--orange); color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: 800; cursor: pointer; margin-bottom: 20px; }
         .topics-list { display: flex; flex-direction: column; gap: 10px; }
-        .topic-item { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 12px; }
+        .topic-item { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .topic-avatar { width: 40px; height: 40px; background: var(--orange-pale); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .topic-info { flex: 1; }
+        .topic-title { font-weight: 800; }
+        .topic-meta { font-size: 11px; color: var(--text3); }
+        .replies-number { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--orange); }
+        
+        /* Правила */
         .rules-list { max-width: 750px; }
-        .rule { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; display: flex; gap: 16px; }
-        .rule-number { font-weight: 800; color: var(--orange); background: var(--orange-pale); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .rule { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 22px 25px; margin-bottom: 14px; display: flex; gap: 18px; }
+        .rule-number { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--orange); background: var(--orange-pale); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .rule-content h3 { font-size: 16px; margin-bottom: 5px; }
+        .rule-content p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+        
         footer { background: var(--text); color: rgba(255,255,255,0.6); padding: 40px 20px; margin-top: 40px; }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; max-width: 1100px; margin: auto; }
-        .support-fab { position: fixed; bottom: 20px; right: 20px; background: var(--orange); width: 55px; height: 55px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; z-index: 100; }
+        .footer-brand .brand { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: white; margin-bottom: 12px; }
+        .footer-brand .brand span { color: var(--orange); }
+        .footer-col a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 13px; display: block; margin-bottom: 8px; cursor: pointer; }
+        .footer-col a:hover { color: var(--orange); }
+        .support-fab { position: fixed; bottom: 20px; right: 20px; background: var(--orange); width: 55px; height: 55px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 100; }
         
         /* Модальні вікна */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.2s; }
         .modal-overlay.open { opacity: 1; visibility: visible; }
-        .modal { background: white; border-radius: 28px; padding: 35px; max-width: 480px; width: 90%; }
+        .modal { background: white; border-radius: 28px; padding: 30px; max-width: 480px; width: 90%; }
         .modal h2 { font-family: 'Syne', sans-serif; margin-bottom: 8px; }
+        .modal p { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
         .modal input, .modal textarea { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; background: var(--bg); }
         .modal-buttons { display: flex; gap: 12px; margin-top: 10px; justify-content: flex-end; }
-        .toast { position: fixed; bottom: 90px; right: 20px; background: #1C1410; color: white; padding: 12px 20px; border-radius: 12px; z-index: 3000; transform: translateY(80px); opacity: 0; transition: 0.25s; }
+        .toast { position: fixed; bottom: 90px; right: 20px; background: var(--text); color: white; padding: 12px 20px; border-radius: 12px; z-index: 3000; transform: translateY(80px); opacity: 0; transition: 0.25s; }
         .toast.show { transform: translateY(0); opacity: 1; }
         
         /* Адмін-панель */
-        .admin-sidebar {
-            width: 260px; background: #0a0a0c; border-right: 1px solid #2a2a2e;
-            position: fixed; height: 100vh; overflow-y: auto; padding: 20px;
-            flex-direction: column; z-index: 150; color: #f0f0f0;
-        }
+        .admin-sidebar { width: 260px; background: #0a0a0c; border-right: 1px solid #2a2a2e; position: fixed; height: 100vh; overflow-y: auto; padding: 20px; flex-direction: column; z-index: 150; color: #f0f0f0; }
         .admin-logo { font-family: 'Syne', sans-serif; font-size: 20px; margin-bottom: 30px; border-bottom: 1px solid #2a2a2e; padding-bottom: 16px; color: white; }
         .admin-logo span { color: var(--orange); }
-        .admin-nav-item { padding: 10px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; color: #ccc; }
+        .admin-nav-item { padding: 10px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; color: #ccc; transition: 0.2s; }
         .admin-nav-item:hover, .admin-nav-item.active { background: #1f1f24; color: var(--orange); }
         .admin-content { margin-left: 260px; padding: 20px; }
         .admin-card { background: #111114; border: 1px solid #2a2a2e; border-radius: 16px; padding: 20px; margin-bottom: 20px; color: #f0f0f0; }
@@ -163,13 +187,7 @@
         .admin-table th, .admin-table td { padding: 8px; text-align: left; border-bottom: 1px solid #2a2a2e; }
         .admin-table select { background: #1a1a1e; color: white; border: 1px solid var(--orange); border-radius: 6px; padding: 6px 10px; cursor: pointer; }
         .rank-highlight { color: #F26419; font-weight: bold; }
-        @media (max-width: 768px) {
-            .admin-sidebar { width: 100%; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; padding: 12px; }
-            .admin-logo { width: 100%; text-align: center; margin-bottom: 10px; }
-            .admin-nav-item { flex: 1 0 auto; text-align: center; font-size: 12px; padding: 8px; }
-            .admin-content { margin-left: 0; padding: 15px; }
-            .admin-table { display: block; overflow-x: auto; }
-        }
+        @media (max-width: 768px) { .admin-sidebar { width: 100%; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; gap: 5px; padding: 12px; } .admin-logo { width: 100%; margin-bottom: 10px; } .admin-nav-item { flex: 1 0 auto; text-align: center; font-size: 12px; padding: 8px; } .admin-content { margin-left: 0; padding: 15px; } .admin-table { display: block; overflow-x: auto; } .hero { padding: 60px 20px 0; } .features { padding: 40px 20px; } .page-container { padding: 40px 20px; } .stats { gap: 30px; } }
     </style>
 </head>
 <body>
@@ -190,7 +208,7 @@
     </nav>
     <div class="support-fab" onclick="openSupportModal()">💬</div>
 
-    <!-- Головна -->
+    <!-- Головна сторінка -->
     <section id="home" class="active">
         <div class="hero">
             <div class="hero-badge"><div class="logo-dot"></div><span id="onlineBadge">247</span> гравців зараз онлайн</div>
@@ -206,12 +224,15 @@
             <div class="stat"><div class="stat-number" id="statModes">6</div><div class="stat-label">Режимів гри</div></div>
         </div>
         <div class="features">
+            <div class="section-label">Можливості</div>
             <div class="section-title">Що чекає тебе на <span>SpireWorld</span></div>
             <div class="features-grid">
-                <div class="feature-card"><div class="feature-icon">⚔️</div><div class="feature-title">PvP Арени</div></div>
-                <div class="feature-card"><div class="feature-icon">🏝️</div><div class="feature-title">SkyBlock</div></div>
-                <div class="feature-card"><div class="feature-icon">🏕️</div><div class="feature-title">Survival</div></div>
-                <div class="feature-card"><div class="feature-icon">🎨</div><div class="feature-title">Creative</div></div>
+                <div class="feature-card"><div class="feature-icon">⚔️</div><div class="feature-title">PvP Арени</div><div class="feature-desc">Рейтингові бої, турніри та щотижневі нагороди.</div></div>
+                <div class="feature-card"><div class="feature-icon">🏝️</div><div class="feature-title">SkyBlock</div><div class="feature-desc">Будуй острів з нуля і змагайся з іншими.</div></div>
+                <div class="feature-card"><div class="feature-icon">🏕️</div><div class="feature-title">Survival</div><div class="feature-desc">Класичне виживання з клановою системою.</div></div>
+                <div class="feature-card"><div class="feature-icon">🎨</div><div class="feature-title">Creative</div><div class="feature-desc">Безмежна творчість на plot-сервері.</div></div>
+                <div class="feature-card"><div class="feature-icon">💰</div><div class="feature-title">Економіка</div><div class="feature-desc">Своя валюта, аукціон та магазини гравців.</div></div>
+                <div class="feature-card"><div class="feature-icon">🛡️</div><div class="feature-title">Захист</div><div class="feature-desc">Анти-чит, захист земель та підтримка 24/7.</div></div>
             </div>
         </div>
     </section>
@@ -223,16 +244,8 @@
             <div class="section-title">Особистий <span>кабінет</span></div>
             <div id="authBox" class="cabinet-box">
                 <div class="auth-tabs"><button class="auth-tab active" onclick="switchAuthTab('login')">Вхід</button><button class="auth-tab" onclick="switchAuthTab('register')">Реєстрація</button></div>
-                <div id="loginForm" class="auth-form active">
-                    <input type="text" id="loginNick" class="auth-input" placeholder="Нікнейм">
-                    <input type="password" id="loginPass" class="auth-input" placeholder="Пароль">
-                    <button class="btn-primary" style="width:100%" onclick="userLogin()">Увійти</button>
-                </div>
-                <div id="registerForm" class="auth-form">
-                    <input type="text" id="regNick" class="auth-input" placeholder="Нікнейм">
-                    <input type="password" id="regPass" class="auth-input" placeholder="Пароль">
-                    <button class="btn-primary" style="width:100%" onclick="userRegister()">Зареєструватися</button>
-                </div>
+                <div id="loginForm" class="auth-form active"><input type="text" id="loginNick" class="auth-input" placeholder="Нікнейм"><input type="password" id="loginPass" class="auth-input" placeholder="Пароль"><button class="btn-primary" style="width:100%" onclick="userLogin()">Увійти</button></div>
+                <div id="registerForm" class="auth-form"><input type="text" id="regNick" class="auth-input" placeholder="Нікнейм"><input type="password" id="regPass" class="auth-input" placeholder="Пароль"><button class="btn-primary" style="width:100%" onclick="userRegister()">Зареєструватися</button></div>
             </div>
             <div id="profileBox" class="cabinet-box" style="display:none">
                 <div class="cabinet-avatar" id="profileAvatar">😎</div>
@@ -272,17 +285,17 @@
         <div class="page-container">
             <div class="section-label">Правила</div>
             <div class="section-title">Правила <span>SpireWorld</span></div>
-            <div class="rules-list" id="rulesList"></div>
+            <div class="rulesList" id="rulesList"></div>
         </div>
     </section>
 
     <footer>
         <div class="footer-grid">
             <div class="footer-brand"><div class="brand">Spire<span>World</span></div><p>Найкращий україномовний Minecraft сервер</p></div>
-            <div class="footer-col"><h4>Навігація</h4><a onclick="showPage('home')">Головна</a><a onclick="showPage('cabinet')">Кабінет</a><a onclick="showPage('shop')">Магазин</a></div>
-            <div class="footer-col"><h4>Контакти</h4><a>Discord</a><a>Telegram</a></div>
+            <div class="footer-col"><h4>Навігація</h4><a onclick="showPage('home')">Головна</a><a onclick="showPage('cabinet')">Кабінет</a><a onclick="showPage('shop')">Магазин</a><a onclick="showPage('forum')">Форум</a><a onclick="showPage('rules')">Правила</a></div>
+            <div class="footer-col"><h4>Контакти</h4><a>Discord</a><a>Telegram</a><a>YouTube</a></div>
         </div>
-        <div style="text-align:center; margin-top:30px;">© 2024 SpireWorld</div>
+        <div class="footer-bottom"><p>© 2024 SpireWorld. Не пов'язано з Mojang Studios.</p></div>
     </footer>
 </div>
 
@@ -303,9 +316,9 @@
     <div id="ticketsTab" style="display:none;"><div class="admin-card"><h2>🎫 Тікети</h2><div id="ticketsList"></div></div></div>
     <div id="topupsTab" style="display:none;"><div class="admin-card"><h2>💰 Заявки на поповнення</h2><div id="topupsList"></div></div></div>
     <div id="ordersTab" style="display:none;"><div class="admin-card"><h2>📦 Замовлення (очікують)</h2><div id="ordersList"></div></div></div>
-    <div id="usersTab" style="display:none;"><div class="admin-card"><h2>👥 Користувачі (управління рангами та балансом)</h2><div id="usersList"></div></div></div>
-    <div id="consoleTab" style="display:none;"><div class="admin-card"><h2>🖥️ Консоль команд</h2><input type="text" id="consoleCommand" placeholder="give balance <нік> <сума>" style="width:100%;"><button class="btn-admin" onclick="execConsoleCommand()">Виконати</button><div id="consoleOutput" class="console-log"></div></div></div>
-    <div id="settingsTab" style="display:none;"><div class="admin-card"><h2>⚙️ Налаштування</h2><button class="btn-admin" onclick="exportData()">📁 Експорт JSON</button><button class="btn-admin" onclick="clearAllData()">⚠️ Очистити все</button></div></div>
+    <div id="usersTab" style="display:none;"><div class="admin-card"><h2>👥 Користувачі (управління)</h2><div id="usersList"></div></div></div>
+    <div id="consoleTab" style="display:none;"><div class="admin-card"><h2>🖥️ Консоль</h2><input type="text" id="consoleCommand" placeholder="give balance <нік> <сума>" style="width:100%;"><button class="btn-admin" onclick="execConsoleCommand()">Виконати</button><div id="consoleOutput" class="console-log"></div></div></div>
+    <div id="settingsTab" style="display:none;"><div class="admin-card"><h2>⚙️ Налаштування</h2><button class="btn-admin" onclick="exportData()">📁 Експорт</button><button class="btn-admin" onclick="clearAllData()" style="background:#dc2626">⚠️ Очистити все</button></div></div>
 </div>
 
 <!-- Модальні вікна -->
@@ -318,14 +331,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getDatabase, ref, get, set, update, push } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBGRcQS_RNA4DWboldCjzBhkvLev2n8fLs",
-        authDomain: "spireworld-30c51.firebaseapp.com",
-        projectId: "spireworld-30c51",
-        storageBucket: "spireworld-30c51.firebasestorage.app",
-        messagingSenderId: "1029200336194",
-        appId: "1:1029200336194:web:8b64a1a3d853b750b9e4db"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyBGRcQS_RNA4DWboldCjzBhkvLev2n8fLs", authDomain: "spireworld-30c51.firebaseapp.com", projectId: "spireworld-30c51", storageBucket: "spireworld-30c51.firebasestorage.app", messagingSenderId: "1029200336194", appId: "1:1029200336194:web:8b64a1a3d853b750b9e4db" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     console.log('✅ Firebase готовий');
@@ -339,171 +345,34 @@
     window.toggleBurger = () => { document.getElementById('burgerBtn').classList.toggle('active'); document.getElementById('navLinks').classList.toggle('active'); };
     window.closeBurger = () => { document.getElementById('burgerBtn').classList.remove('active'); document.getElementById('navLinks').classList.remove('active'); };
 
-    // Авторизація
-    window.switchAuthTab = (t) => {
-        document.querySelectorAll('.auth-tab').forEach(tab=>tab.classList.remove('active'));
-        document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
-        if(t==='login'){ document.querySelectorAll('.auth-tab')[0].classList.add('active'); document.getElementById('loginForm').classList.add('active'); }
-        else { document.querySelectorAll('.auth-tab')[1].classList.add('active'); document.getElementById('registerForm').classList.add('active'); }
-    };
+    window.switchAuthTab = (t) => { document.querySelectorAll('.auth-tab').forEach(tab=>tab.classList.remove('active')); document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active')); if(t==='login'){ document.querySelectorAll('.auth-tab')[0].classList.add('active'); document.getElementById('loginForm').classList.add('active'); } else { document.querySelectorAll('.auth-tab')[1].classList.add('active'); document.getElementById('registerForm').classList.add('active'); } };
     
-    window.userRegister = async () => {
-        let nick = document.getElementById('regNick').value.trim();
-        let pass = document.getElementById('regPass').value.trim();
-        if(nick.length<3 || pass.length<3){ toast('Мін. 3 символи'); return; }
-        const snap = await get(ref(db, `users/${nick}`));
-        if(snap.exists()){ toast('Користувач вже існує'); return; }
-        await set(ref(db, `users/${nick}`), { password: btoa(pass), balance: 0, inventory: [], rank: 'Гравець' });
-        toast('Реєстрація успішна! Увійдіть');
-        switchAuthTab('login');
-        document.getElementById('loginNick').value = nick;
-    };
+    window.userRegister = async () => { let nick = document.getElementById('regNick').value.trim(); let pass = document.getElementById('regPass').value.trim(); if(nick.length<3 || pass.length<3){ toast('Мін. 3 символи'); return; } const snap = await get(ref(db, `users/${nick}`)); if(snap.exists()){ toast('Користувач вже існує'); return; } await set(ref(db, `users/${nick}`), { password: btoa(pass), balance: 0, inventory: [], rank: 'Гравець' }); toast('Реєстрація успішна! Увійдіть'); switchAuthTab('login'); document.getElementById('loginNick').value = nick; };
     
-    window.userLogin = async () => {
-        let nick = document.getElementById('loginNick').value.trim();
-        let pass = document.getElementById('loginPass').value.trim();
-        const snap = await get(ref(db, `users/${nick}`));
-        if(!snap.exists()){ toast('Користувача не існує'); return; }
-        if(atob(snap.val().password) !== pass){ toast('Неправильний пароль'); return; }
-        currentUser = nick; localStorage.setItem('spireworld_current_user', nick);
-        toast(`Ласкаво просимо, ${nick}!`);
-        updateCabinetUI(); checkAdmin();
-    };
+    window.userLogin = async () => { let nick = document.getElementById('loginNick').value.trim(); let pass = document.getElementById('loginPass').value.trim(); const snap = await get(ref(db, `users/${nick}`)); if(!snap.exists()){ toast('Користувача не існує'); return; } if(atob(snap.val().password) !== pass){ toast('Неправильний пароль'); return; } currentUser = nick; localStorage.setItem('spireworld_current_user', nick); toast(`Ласкаво просимо, ${nick}!`); updateCabinetUI(); checkAdmin(); };
     
     window.userLogout = () => { currentUser = null; localStorage.removeItem('spireworld_current_user'); toast('Ви вийшли'); updateCabinetUI(); checkAdmin(); };
     
-    async function updateCabinetUI() {
-        if(currentUser){
-            const userSnap = await get(ref(db, `users/${currentUser}`));
-            if(userSnap.exists()){
-                let d = userSnap.val();
-                document.getElementById('authBox').style.display = 'none';
-                document.getElementById('profileBox').style.display = 'block';
-                document.getElementById('profileName').innerText = currentUser;
-                document.getElementById('profileAvatar').innerText = currentUser[0].toUpperCase();
-                document.getElementById('profileBalance').innerText = d.balance || 0;
-                document.getElementById('profileRank').innerText = d.rank || 'Гравець';
-                return;
-            }
-        }
-        document.getElementById('authBox').style.display = 'block';
-        document.getElementById('profileBox').style.display = 'none';
-    }
+    async function updateCabinetUI() { if(currentUser){ const userSnap = await get(ref(db, `users/${currentUser}`)); if(userSnap.exists()){ let d = userSnap.val(); document.getElementById('authBox').style.display = 'none'; document.getElementById('profileBox').style.display = 'block'; document.getElementById('profileName').innerText = currentUser; document.getElementById('profileAvatar').innerText = currentUser[0].toUpperCase(); document.getElementById('profileBalance').innerText = d.balance || 0; document.getElementById('profileRank').innerText = d.rank || 'Гравець'; const ordersSnap = await get(ref(db, 'orders')); let userOrders = []; if(ordersSnap.exists()){ for(let id in ordersSnap.val()){ if(ordersSnap.val()[id].userId === currentUser){ userOrders.push(ordersSnap.val()[id]); } } } userOrders.sort((a,b)=>b.timestamp - a.timestamp); document.getElementById('profileOrdersList').innerHTML = userOrders.map(o => `<div class="order-item"><span><b>${o.item}</b> - ${o.amount}₴</span><span class="status-badge status-${o.status}">${o.status === 'pending' ? '⏳ Очікує' : (o.status === 'approved' ? '✅ Схвалено' : '❌ Відхилено')}</span></div>`).join('') || '<div>📭 Немає замовлень</div>'; return; } } document.getElementById('authBox').style.display = 'block'; document.getElementById('profileBox').style.display = 'none'; }
     
-    async function checkAdmin() { 
-        if(currentUser === 'vortex'){ 
-            isAdmin = true; 
-            document.getElementById('adminBtn').style.display = 'inline-block';
-            const vortexSnap = await get(ref(db, 'users/vortex'));
-            if(!vortexSnap.exists()){
-                await set(ref(db, 'users/vortex'), { password: btoa('admin123'), balance: 9999, inventory: [], rank: 'ADMIN' });
-            }
-        } else { 
-            isAdmin = false; 
-            document.getElementById('adminBtn').style.display = 'none'; 
-        } 
-    }
+    async function checkAdmin() { if(currentUser === 'vortex'){ isAdmin = true; document.getElementById('adminBtn').style.display = 'inline-block'; const vortexSnap = await get(ref(db, 'users/vortex')); if(!vortexSnap.exists()){ await set(ref(db, 'users/vortex'), { password: btoa('admin123'), balance: 9999, inventory: [], rank: 'ADMIN' }); } } else { isAdmin = false; document.getElementById('adminBtn').style.display = 'none'; } }
 
-    // Відправка листів
-    async function sendFormSubmit(to, subject, message, replyTo) {
-        const fd = new FormData();
-        fd.append('email', to); fd.append('subject', subject); fd.append('message', message);
-        if(replyTo) fd.append('_replyto', replyTo);
-        fd.append('_captcha', 'false');
-        try { await fetch('https://formsubmit.co/ajax/' + to, { method: 'POST', body: fd }); } catch(e){}
-    }
+    async function sendFormSubmit(to, subject, message, replyTo) { const fd = new FormData(); fd.append('email', to); fd.append('subject', subject); fd.append('message', message); if(replyTo) fd.append('_replyto', replyTo); fd.append('_captcha', 'false'); try { await fetch('https://formsubmit.co/ajax/' + to, { method: 'POST', body: fd }); } catch(e){} }
+    window.sendSupport = async () => { let name = document.getElementById('supportName').value.trim(); let email = document.getElementById('supportEmail').value.trim(); let msg = document.getElementById('supportMessage').value.trim(); if(!name || !email || !msg){ toast('Заповніть всі поля'); return; } await push(ref(db, 'support_tickets'), { nickname: name, email, message: msg, time: new Date().toLocaleString(), status:'new' }); await sendFormSubmit('simpleworld237@gmail.com', `Тікет від ${name}`, msg, email); toast('Тікет відправлено!'); closeSupportModal(); };
+    window.requestTopup = async () => { if(!currentUser){ toast('Увійдіть в кабінет'); return; } let amount = document.getElementById('topupAmount').value.trim(); let email = document.getElementById('topupEmail').value.trim(); if(!amount || amount<10){ toast('Сума від 10₴'); return; } if(!email){ toast('Введіть Email'); return; } await push(ref(db, 'topup_requests'), { username: currentUser, amount: parseInt(amount), email, time: new Date().toLocaleString(), status:'pending' }); toast(`Заявку на ${amount}₴ відправлено!`); closeTopupModal(); };
 
-    window.sendSupport = async () => {
-        let name = document.getElementById('supportName').value.trim();
-        let email = document.getElementById('supportEmail').value.trim();
-        let msg = document.getElementById('supportMessage').value.trim();
-        if(!name || !email || !msg){ toast('Заповніть всі поля'); return; }
-        await push(ref(db, 'support_tickets'), { nickname: name, email, message: msg, time: new Date().toLocaleString(), status:'new' });
-        await sendFormSubmit('simpleworld237@gmail.com', `Тікет від ${name}`, `${msg}`, email);
-        toast('Тікет відправлено!');
-        closeSupportModal();
-    };
-    
-    window.requestTopup = async () => {
-        if(!currentUser){ toast('Увійдіть в кабінет'); return; }
-        let amount = document.getElementById('topupAmount').value.trim();
-        let email = document.getElementById('topupEmail').value.trim();
-        if(!amount || amount<10){ toast('Сума від 10₴'); return; }
-        if(!email){ toast('Введіть Email'); return; }
-        await push(ref(db, 'topup_requests'), { username: currentUser, amount: parseInt(amount), email, time: new Date().toLocaleString(), status:'pending' });
-        toast(`Заявку на ${amount}₴ відправлено!`);
-        closeTopupModal();
-    };
-
-    // Магазин
-    const shopData = {
-        grief: { ranks: [{icon:'🔪',name:'GRIEFER',price:99},{icon:'🔥',name:'WARLORD',price:199}], items: [{icon:'⚔️',name:'Меч Бога',price:49}], currency: [{icon:'💰',name:'10000 GC',price:29}] },
-        anarchy: { ranks: [{icon:'☠️',name:'SURVIVOR',price:79}], items: [], currency: [] },
-        bedwars: { ranks: [{icon:'🗡️',name:'IRON',price:49}], items: [], currency: [] }
-    };
+    const shopData = { grief: { ranks: [{icon:'🔪',name:'GRIEFER',price:99},{icon:'🔥',name:'WARLORD',price:199}], items: [{icon:'⚔️',name:'Меч Бога',price:49}], currency: [{icon:'💰',name:'10000 GC',price:29}] }, anarchy: { ranks: [{icon:'☠️',name:'SURVIVOR',price:79}], items: [], currency: [] }, bedwars: { ranks: [{icon:'🗡️',name:'IRON',price:49}], items: [], currency: [] } };
     let curSrv = 'grief', curCat = 'ranks';
     window.changeServer = (s, btn) => { curSrv = s; document.querySelectorAll('.server-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderShop(); };
     window.changeCategory = (c, btn) => { curCat = c; document.querySelectorAll('.category-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderShop(); };
-    function renderShop(){
-        let items = shopData[curSrv]?.[curCat] || [];
-        let grid = document.getElementById('shopGrid');
-        if(!items.length){ grid.innerHTML = '<p>Товарів немає</p>'; return; }
-        grid.innerHTML = items.map(i => `<div class="product"><div class="product-icon">${i.icon}</div><div class="product-name">${i.name}</div><div class="product-price">${i.price}₴</div><button class="buy-btn" onclick="buyItem('${i.name}',${i.price})">Купити</button></div>`).join('');
-    }
+    function renderShop(){ let items = shopData[curSrv]?.[curCat] || []; let grid = document.getElementById('shopGrid'); if(!items.length){ grid.innerHTML = '<p>Товарів немає</p>'; return; } grid.innerHTML = items.map(i => `<div class="product"><div class="product-icon">${i.icon}</div><div class="product-name">${i.name}</div><div class="product-price">${i.price}₴</div><button class="buy-btn" onclick="buyItem('${i.name}',${i.price})">Купити</button></div>`).join(''); }
     renderShop();
-    
-    window.buyItem = async (name, price) => {
-        if(!currentUser){ toast('Увійдіть в кабінет'); showPage('cabinet'); return; }
-        const userSnap = await get(ref(db, `users/${currentUser}`));
-        const balance = userSnap.val()?.balance || 0;
-        if(balance < price) { toast('Недостатньо коштів'); return; }
-        await push(ref(db, 'orders'), { userId: currentUser, item: name, amount: price, status: 'pending', timestamp: Date.now(), timeStr: new Date().toLocaleString() });
-        toast(`Замовлення на "${name}" створено!`);
-    };
-    
-    window.approveOrder = async (orderId, userId, item, amount) => {
-        const userSnap = await get(ref(db, `users/${userId}`));
-        if(!userSnap.exists()) return toast('Користувач не знайдений');
-        const currentBalance = userSnap.val().balance || 0;
-        if(currentBalance < amount) return toast('Недостатньо коштів');
-        let inventory = userSnap.val().inventory || [];
-        inventory.push(item);
-        await update(ref(db, `users/${userId}`), { balance: currentBalance - amount, inventory });
-        await update(ref(db, `orders/${orderId}`), { status: 'approved' });
-        toast(`Замовлення ${item} схвалено!`);
-        if(userId === currentUser) updateCabinetUI();
-        loadAdminDashboard();
-        await addLog(`Схвалено замовлення ${item} для ${userId}`);
-    };
-    window.rejectOrder = async (orderId) => {
-        await update(ref(db, `orders/${orderId}`), { status: 'rejected' });
-        toast('Замовлення відхилено');
-        loadAdminDashboard();
-        await addLog(`Відхилено замовлення ${orderId}`);
-    };
+    window.buyItem = async (name, price) => { if(!currentUser){ toast('Увійдіть в кабінет'); showPage('cabinet'); return; } const userSnap = await get(ref(db, `users/${currentUser}`)); const balance = userSnap.val()?.balance || 0; if(balance < price) { toast('Недостатньо коштів'); return; } await push(ref(db, 'orders'), { userId: currentUser, item: name, amount: price, status: 'pending', timestamp: Date.now(), timeStr: new Date().toLocaleString() }); toast(`Замовлення на "${name}" створено!`); };
+    window.approveOrder = async (orderId, userId, item, amount) => { const userSnap = await get(ref(db, `users/${userId}`)); if(!userSnap.exists()) return; const currentBalance = userSnap.val().balance || 0; if(currentBalance < amount) return; let inventory = userSnap.val().inventory || []; inventory.push(item); await update(ref(db, `users/${userId}`), { balance: currentBalance - amount, inventory }); await update(ref(db, `orders/${orderId}`), { status: 'approved' }); toast(`Замовлення ${item} схвалено!`); if(userId === currentUser) updateCabinetUI(); loadAdminDashboard(); };
+    window.rejectOrder = async (orderId) => { await update(ref(db, `orders/${orderId}`), { status: 'rejected' }); toast('Замовлення відхилено'); loadAdminDashboard(); };
 
-    // ========== ГОЛОВНІ ФУНКЦІЇ АДМІНКИ ==========
-    window.changeRank = async (nick, newRank) => {
-        if (!isAdmin) { toast('Доступ заборонено'); return; }
-        await update(ref(db, `users/${nick}`), { rank: newRank });
-        toast(`✅ Ранг ${nick} змінено на ${newRank}`);
-        await addLog(`Змінено ранг ${nick} на ${newRank}`);
-        document.getElementById(`rank_${nick}`).innerText = newRank;
-        if (nick === currentUser) updateCabinetUI();
-        loadAdminDashboard();
-    };
-    
-    window.changeBalance = async (nick, amount) => {
-        if (!isAdmin) { toast('Доступ заборонено'); return; }
-        const userSnap = await get(ref(db, `users/${nick}`));
-        if (!userSnap.exists()) { toast('Користувача не знайдено'); return; }
-        const newBalance = (userSnap.val().balance || 0) + amount;
-        await update(ref(db, `users/${nick}`), { balance: newBalance });
-        toast(`✅ Баланс ${nick} змінено на ${newBalance}₴ (${amount >= 0 ? '+' : ''}${amount}₴)`);
-        await addLog(`Змінено баланс ${nick} на ${newBalance}₴`);
-        if (nick === currentUser) updateCabinetUI();
-        loadAdminDashboard();
-    };
+    window.changeRank = async (nick, newRank) => { if (!isAdmin) { toast('Доступ заборонено'); return; } await update(ref(db, `users/${nick}`), { rank: newRank }); toast(`Ранг ${nick} змінено на ${newRank}`); document.getElementById(`rank_${nick}`).innerHTML = newRank; if (nick === currentUser) updateCabinetUI(); loadAdminDashboard(); };
+    window.changeBalance = async (nick, amount) => { if (!isAdmin) { toast('Доступ заборонено'); return; } const userSnap = await get(ref(db, `users/${nick}`)); if (!userSnap.exists()) return; const newBalance = (userSnap.val().balance || 0) + amount; await update(ref(db, `users/${nick}`), { balance: newBalance }); toast(`Баланс ${nick} змінено на ${newBalance}₴`); document.getElementById(`balance_${nick}`).innerHTML = newBalance; if (nick === currentUser) updateCabinetUI(); loadAdminDashboard(); };
 
     document.getElementById('adminBtn').onclick = () => { if(!isAdmin){ toast('Доступ заборонено. Увійдіть як vortex'); showPage('cabinet'); return; } document.body.classList.add('admin-mode'); loadAdminDashboard(); };
     document.getElementById('exitAdminBtn').onclick = () => { document.body.classList.remove('admin-mode'); };
@@ -512,84 +381,35 @@
         const usersSnap = await get(ref(db,'users')); const usersCount = usersSnap.exists() ? Object.keys(usersSnap.val()).length : 0;
         const ticketsSnap = await get(ref(db,'support_tickets')); const ticketsCount = ticketsSnap.exists() ? Object.keys(ticketsSnap.val()).length : 0;
         const topupsSnap = await get(ref(db,'topup_requests')); const topupsCount = topupsSnap.exists() ? Object.keys(topupsSnap.val()).length : 0;
-        const ordersSnap = await get(ref(db,'orders')); let totalSales = 0, pendingOrders = 0;
-        if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o = ordersSnap.val()[id]; if(o.status === 'approved') totalSales += o.amount; if(o.status === 'pending') pendingOrders++; }
+        const ordersSnap = await get(ref(db,'orders')); let totalSales = 0, pendingOrders = 0; if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o = ordersSnap.val()[id]; if(o.status === 'approved') totalSales += o.amount; if(o.status === 'pending') pendingOrders++; }
         document.getElementById('adminStats').innerHTML = `<div class="stat-card">${usersCount}<br>Користувачів</div><div class="stat-card">${ticketsCount}<br>Тікетів</div><div class="stat-card">${topupsCount}<br>Заявок</div><div class="stat-card">${totalSales}₴<br>Продажів</div><div class="stat-card">${pendingOrders}<br>Замовлень</div>`;
-        
-        const logsSnap = await get(ref(db,'admin_logs'));
-        let logs=''; if(logsSnap.exists()) logs = Object.values(logsSnap.val()).reverse().slice(0,10).map(l=>`<div>[${l.time}] ${l.action}</div>`).join('');
-        document.getElementById('adminLogs').innerHTML = logs || 'Немає логів';
-        
-        // Тікети
-        let tic = ''; if(ticketsSnap.exists()) for(let id in ticketsSnap.val()){ let t = ticketsSnap.val()[id]; tic += `<div class="ticket-item"><b>${t.nickname}</b> (${t.email})<br>${t.message}<br><small>${t.time}</small><br><button class="btn-admin" onclick="closeTicket('${id}')">✅ Закрити</button></div>`; }
-        document.getElementById('ticketsList').innerHTML = tic || 'Немає';
-        // Заявки
-        let reqs = ''; if(topupsSnap.exists()) for(let id in topupsSnap.val()){ let u = topupsSnap.val()[id]; if(u.status !== 'approved') reqs += `<div class="topup-item"><b>${u.username}</b> - ${u.amount}₴<br><small>${u.time}</small><button class="btn-admin" onclick="approveTopup('${id}','${u.username}',${u.amount})">✅ Підтвердити</button></div>`; }
-        document.getElementById('topupsList').innerHTML = reqs || 'Немає';
-        // Замовлення
-        let ordHtml = ''; if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o = ordersSnap.val()[id]; if(o.status === 'pending') ordHtml += `<div class="order-item-admin"><b>${o.userId}</b> - ${o.item} (${o.amount}₴)<br><button class="btn-admin" onclick="approveOrder('${id}','${o.userId}','${o.item}',${o.amount})">✅ Схвалити</button> <button class="btn-admin" onclick="rejectOrder('${id}')">❌ Відхилити</button></div>`; }
-        document.getElementById('ordersList').innerHTML = ordHtml || 'Немає';
-        
-        // КОРИСТУВАЧІ – управління рангами та балансом
-        let usr = `<table class="admin-table">
-            <thead><tr><th>Нік</th><th>Поточний баланс</th><th>Поточний ранг</th><th>Зміна балансу</th><th>Зміна рангу</th></tr></thead>
-            <tbody>`;
-        if(usersSnap.exists()) {
-            for(let nick in usersSnap.val()){ 
-                let u = usersSnap.val()[nick];
-                let currentRank = u.rank || 'Гравець';
-                usr += `<tr>
-                    <td><strong>${nick}</strong></td>
-                    <td><span id="balance_${nick}">${u.balance}</span>₴</td>
-                    <td><span id="rank_${nick}" class="rank-highlight">${currentRank}</span></td>
-                    <td>
-                        <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                            <button class="btn-admin" onclick="changeBalance('${nick}', -100)">-100₴</button>
-                            <button class="btn-admin" onclick="changeBalance('${nick}', -10)">-10₴</button>
-                            <button class="btn-admin" onclick="changeBalance('${nick}', 10)">+10₴</button>
-                            <button class="btn-admin" onclick="changeBalance('${nick}', 100)">+100₴</button>
-                            <input type="number" id="custom_${nick}" placeholder="сума" style="width:80px;">
-                            <button class="btn-admin" onclick="changeBalance('${nick}', parseInt(document.getElementById('custom_${nick}').value) || 0)">✏️</button>
-                        </div>
-                    </td>
-                    <td>
-                        <select id="select_${nick}" onchange="changeRank('${nick}', this.value)" style="padding:6px;">
-                            <option value="Гравець" ${currentRank === 'Гравець' ? 'selected' : ''}>Гравець</option>
-                            <option value="VIP" ${currentRank === 'VIP' ? 'selected' : ''}>VIP</option>
-                            <option value="MODER" ${currentRank === 'MODER' ? 'selected' : ''}>MODER</option>
-                            <option value="ADMIN" ${currentRank === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
-                        </select>
-                    </td>
-                </tr>`;
-            }
-        }
-        usr += `</tbody></table>`;
-        document.getElementById('usersList').innerHTML = usr;
+        const logsSnap = await get(ref(db,'admin_logs')); let logs=''; if(logsSnap.exists()) logs = Object.values(logsSnap.val()).reverse().slice(0,10).map(l=>`<div>[${l.time}] ${l.action}</div>`).join(''); document.getElementById('adminLogs').innerHTML = logs || 'Немає логів';
+        let tic = ''; if(ticketsSnap.exists()) for(let id in ticketsSnap.val()){ let t = ticketsSnap.val()[id]; tic += `<div class="ticket-item"><b>${t.nickname}</b> (${t.email})<br>${t.message}<br><small>${t.time}</small><button class="btn-admin" onclick="closeTicket('${id}')">✅ Закрити</button></div>`; } document.getElementById('ticketsList').innerHTML = tic || 'Немає';
+        let reqs = ''; if(topupsSnap.exists()) for(let id in topupsSnap.val()){ let u = topupsSnap.val()[id]; if(u.status !== 'approved') reqs += `<div class="topup-item"><b>${u.username}</b> - ${u.amount}₴<br><button class="btn-admin" onclick="approveTopup('${id}','${u.username}',${u.amount})">✅ Підтвердити</button></div>`; } document.getElementById('topupsList').innerHTML = reqs || 'Немає';
+        let ordHtml = ''; if(ordersSnap.exists()) for(let id in ordersSnap.val()){ let o = ordersSnap.val()[id]; if(o.status === 'pending') ordHtml += `<div class="order-item-admin"><b>${o.userId}</b> - ${o.item} (${o.amount}₴)<br><button class="btn-admin" onclick="approveOrder('${id}','${o.userId}','${o.item}',${o.amount})">✅ Схвалити</button> <button class="btn-admin" onclick="rejectOrder('${id}')">❌ Відхилити</button></div>`; } document.getElementById('ordersList').innerHTML = ordHtml || 'Немає';
+        let usr = `<table class="admin-table"><thead><tr><th>Нік</th><th>Баланс</th><th>Ранг</th><th>Зміна балансу</th><th>Зміна рангу</th></tr></thead><tbody>`;
+        if(usersSnap.exists()) for(let nick in usersSnap.val()){ let u = usersSnap.val()[nick]; let currentRank = u.rank || 'Гравець'; usr += `<tr><td><strong>${nick}</strong></td><td><span id="balance_${nick}">${u.balance}</span>₴</td><td><span id="rank_${nick}" style="color:#F26419; font-weight:bold;">${currentRank}</span></td>
+        <td><div style="display:flex; gap:5px; flex-wrap:wrap;"><button class="btn-admin" onclick="changeBalance('${nick}', -100)">-100</button><button class="btn-admin" onclick="changeBalance('${nick}', -10)">-10</button><button class="btn-admin" onclick="changeBalance('${nick}', 10)">+10</button><button class="btn-admin" onclick="changeBalance('${nick}', 100)">+100</button><input type="number" id="custom_${nick}" placeholder="сума" style="width:70px;"><button class="btn-admin" onclick="changeBalance('${nick}', parseInt(document.getElementById('custom_${nick}').value) || 0)">✏️</button></div></td>
+        <td><select id="select_${nick}" onchange="changeRank('${nick}', this.value)" style="padding:6px;"><option value="Гравець" ${currentRank === 'Гравець' ? 'selected' : ''}>Гравець</option><option value="VIP" ${currentRank === 'VIP' ? 'selected' : ''}>VIP</option><option value="MODER" ${currentRank === 'MODER' ? 'selected' : ''}>MODER</option><option value="ADMIN" ${currentRank === 'ADMIN' ? 'selected' : ''}>ADMIN</option></select></td></tr>`; }
+        usr += `</tbody></table>`; document.getElementById('usersList').innerHTML = usr;
     }
-    
     window.closeTicket = async(id) => { await set(ref(db, `support_tickets/${id}/status`), 'closed'); toast('Закрито'); loadAdminDashboard(); };
-    window.approveTopup = async(id, user, amount) => { const snap = await get(ref(db, `users/${user}`)); await update(ref(db, `users/${user}`), { balance: (snap.val().balance || 0) + amount }); await set(ref(db, `topup_requests/${id}/status`), 'approved'); toast(`✅ ${amount}₴ зараховано ${user}`); loadAdminDashboard(); await addLog(`Поповнення ${user} на ${amount}₴`); };
+    window.approveTopup = async(id, user, amount) => { const snap = await get(ref(db, `users/${user}`)); await update(ref(db, `users/${user}`), { balance: (snap.val().balance || 0) + amount }); await set(ref(db, `topup_requests/${id}/status`), 'approved'); toast(`✅ ${amount}₴ зараховано ${user}`); loadAdminDashboard(); };
     window.execConsoleCommand = async() => { let cmd = document.getElementById('consoleCommand').value.trim(); if(cmd.startsWith('give balance ')){ let parts = cmd.split(' '); let target = parts[2]; let amount = parseInt(parts[3]); const snap = await get(ref(db, `users/${target}`)); if(snap.exists()){ await update(ref(db, `users/${target}`), { balance: (snap.val().balance || 0) + amount }); toast(`✅ ${target} +${amount}₴`); loadAdminDashboard(); } else toast('Користувача немає'); } else toast('Невідома команда'); };
-    async function addLog(action){ await push(ref(db, 'admin_logs'), { action, time: new Date().toLocaleString() }); }
     window.exportData = async () => { const data = await get(ref(db,'/')); const json = JSON.stringify(data.val()); const blob = new Blob([json],{type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click(); toast('Експорт виконано'); };
     window.clearAllData = async () => { if(confirm('ВИДАЛИТИ ВСІ ДАНІ?')){ await set(ref(db,'users'),{}); await set(ref(db,'support_tickets'),{}); await set(ref(db,'topup_requests'),{}); await set(ref(db,'orders'),{}); await set(ref(db,'admin_logs'),{}); toast('Очищено'); loadAdminDashboard(); } };
-    
     document.querySelectorAll('.admin-nav-item[data-tab]').forEach(item => { item.onclick = () => { let tab = item.getAttribute('data-tab'); document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active')); item.classList.add('active'); document.getElementById('dashboardTab').style.display = tab === 'dashboard' ? 'block' : 'none'; document.getElementById('ticketsTab').style.display = tab === 'tickets' ? 'block' : 'none'; document.getElementById('topupsTab').style.display = tab === 'topups' ? 'block' : 'none'; document.getElementById('ordersTab').style.display = tab === 'orders' ? 'block' : 'none'; document.getElementById('usersTab').style.display = tab === 'users' ? 'block' : 'none'; document.getElementById('consoleTab').style.display = tab === 'console' ? 'block' : 'none'; document.getElementById('settingsTab').style.display = tab === 'settings' ? 'block' : 'none'; if(tab !== 'dashboard') loadAdminDashboard(); }; });
     
-    async function updateMainStats() {
-        const snap = await get(ref(db, 'users'));
-        document.getElementById('statRegistered').innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
-    }
-    updateMainStats();
-    setInterval(updateMainStats, 30000);
+    async function updateMainStats() { const snap = await get(ref(db, 'users')); document.getElementById('statRegistered').innerText = snap.exists() ? Object.keys(snap.val()).length : 0; }
+    updateMainStats(); setInterval(updateMainStats, 30000);
     
     let topics = [{icon:'📢', title:'Оновлення 2.5', author:'Admin', time:'2 год', replies:34}];
-    function renderForum(){ document.getElementById('topicsList').innerHTML = topics.map(t => `<div class="topic-item"><span>${t.icon}</span><div><b>${t.title}</b><br>${t.author} · ${t.time}</div><div>${t.replies}</div></div>`).join(''); }
+    function renderForum(){ document.getElementById('topicsList').innerHTML = topics.map(t => `<div class="topic-item"><div class="topic-avatar">${t.icon}</div><div class="topic-info"><div class="topic-title">${t.title}</div><div class="topic-meta">${t.author} · ${t.time}</div></div><div class="replies-number">${t.replies}</div></div>`).join(''); }
     window.createTopic = () => { let title = document.getElementById('topicTitle').value.trim(); let cont = document.getElementById('topicContent').value.trim(); if(!title || !cont){ toast('Заповніть поля'); return; } topics.unshift({icon:'💬', title:title, author:currentUser || 'Гість', time:'щойно', replies:0}); renderForum(); closeForumModal(); toast('Тему опубліковано'); };
     renderForum();
     
-    const rulesArr = [{num:'01', title:'Повага', desc:'Не ображайте інших.'},{num:'02', title:'Чити', desc:'Бан назавжди.'}];
-    function renderRules(){ document.getElementById('rulesList').innerHTML = rulesArr.map(r => `<div class="rule"><div class="rule-number">${r.num}</div><div><h3>${r.title}</h3><p>${r.desc}</p></div></div>`).join(''); }
+    const rulesArr = [{num:'01', title:'Повага до гравців', desc:'Заборонено ображати інших.'},{num:'02', title:'Заборона читів', desc:'Бан назавжди.'},{num:'03', title:'Гріферство', desc:'Руйнування чужих будівель заборонено.'}];
+    function renderRules(){ document.getElementById('rulesList').innerHTML = rulesArr.map(r => `<div class="rule"><div class="rule-number">${r.num}</div><div class="rule-content"><h3>${r.title}</h3><p>${r.desc}</p></div></div>`).join(''); }
     renderRules();
     
     window.openSupportModal = () => document.getElementById('supportModal').classList.add('open');

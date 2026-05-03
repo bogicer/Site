@@ -355,8 +355,21 @@
     
     async function updateCabinetUI() { if(currentUser){ const userSnap = await get(ref(db, `users/${currentUser}`)); if(userSnap.exists()){ let d = userSnap.val(); document.getElementById('authBox').style.display = 'none'; document.getElementById('profileBox').style.display = 'block'; document.getElementById('profileName').innerText = currentUser; document.getElementById('profileAvatar').innerText = currentUser[0].toUpperCase(); document.getElementById('profileBalance').innerText = d.balance || 0; document.getElementById('profileRank').innerText = d.rank || 'Гравець'; const ordersSnap = await get(ref(db, 'orders')); let userOrders = []; if(ordersSnap.exists()){ for(let id in ordersSnap.val()){ if(ordersSnap.val()[id].userId === currentUser){ userOrders.push(ordersSnap.val()[id]); } } } userOrders.sort((a,b)=>b.timestamp - a.timestamp); document.getElementById('profileOrdersList').innerHTML = userOrders.map(o => `<div class="order-item"><span><b>${o.item}</b> - ${o.amount}₴</span><span class="status-badge status-${o.status}">${o.status === 'pending' ? '⏳ Очікує' : (o.status === 'approved' ? '✅ Схвалено' : '❌ Відхилено')}</span></div>`).join('') || '<div>📭 Немає замовлень</div>'; return; } } document.getElementById('authBox').style.display = 'block'; document.getElementById('profileBox').style.display = 'none'; }
     
-    async function checkAdmin() { if(currentUser === 'vortex'){ isAdmin = true; document.getElementById('adminBtn').style.display = 'inline-block'; const vortexSnap = await get(ref(db, 'users/vortex')); if(!vortexSnap.exists()){ await set(ref(db, 'users/vortex'), { password: btoa('admin123'), balance: 9999, inventory: [], rank: 'ADMIN' }); } } else { isAdmin = false; document.getElementById('adminBtn').style.display = 'none'; } }
-
+    async function checkAdmin() { 
+    if(currentUser){ 
+        const rankSnap = await get(ref(db, `users/${currentUser}/rank`));
+        if(rankSnap.val() === 'ADMIN'){ 
+            isAdmin = true; 
+            document.getElementById('adminBtn').style.display = 'inline-block';
+        } else { 
+            isAdmin = false; 
+            document.getElementById('adminBtn').style.display = 'none'; 
+        }
+    } else { 
+        isAdmin = false; 
+        document.getElementById('adminBtn').style.display = 'none'; 
+    } 
+}
     async function sendFormSubmit(to, subject, message, replyTo) { const fd = new FormData(); fd.append('email', to); fd.append('subject', subject); fd.append('message', message); if(replyTo) fd.append('_replyto', replyTo); fd.append('_captcha', 'false'); try { await fetch('https://formsubmit.co/ajax/' + to, { method: 'POST', body: fd }); } catch(e){} }
     window.sendSupport = async () => { let name = document.getElementById('supportName').value.trim(); let email = document.getElementById('supportEmail').value.trim(); let msg = document.getElementById('supportMessage').value.trim(); if(!name || !email || !msg){ toast('Заповніть всі поля'); return; } await push(ref(db, 'support_tickets'), { nickname: name, email, message: msg, time: new Date().toLocaleString(), status:'new' }); await sendFormSubmit('simpleworld237@gmail.com', `Тікет від ${name}`, msg, email); toast('Тікет відправлено!'); closeSupportModal(); };
     window.requestTopup = async () => { if(!currentUser){ toast('Увійдіть в кабінет'); return; } let amount = document.getElementById('topupAmount').value.trim(); let email = document.getElementById('topupEmail').value.trim(); if(!amount || amount<10){ toast('Сума від 10₴'); return; } if(!email){ toast('Введіть Email'); return; } await push(ref(db, 'topup_requests'), { username: currentUser, amount: parseInt(amount), email, time: new Date().toLocaleString(), status:'pending' }); toast(`Заявку на ${amount}₴ відправлено!`); closeTopupModal(); };

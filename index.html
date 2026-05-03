@@ -482,55 +482,76 @@
     
     updateCabinetUI();
     checkAdmin();
-    // Функция отправки письма пользователю с реквизитами
-async function sendPaymentEmail(userEmail, username, amount, orderId) {
-    // Ваши реквизиты для оплаты (замените на свои)
-    const bankDetails = `
+window.requestTopup = async () => {
+    if(!currentUser){ 
+        toast('❌ Увійдіть в кабінет'); 
+        return; 
+    }
+    
+    let amount = document.getElementById('topupAmount').value.trim();
+    let email = document.getElementById('topupEmail').value.trim();
+    
+    if(!amount || amount<10){ 
+        toast('❌ Сума від 10₴'); 
+        return; 
+    }
+    if(!email){ 
+        toast('❌ Введіть Email'); 
+        return; 
+    }
+    
+    const orderId = 'SPW-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+    
+    const reqRef = push(ref(db, 'topup_requests'));
+    await set(reqRef, { 
+        username: currentUser, 
+        amount: parseInt(amount), 
+        email: email, 
+        orderId: orderId,
+        time: new Date().toLocaleString(), 
+        status: 'pending' 
+    });
+    
+    // Письмо АДМИНУ
+    const adminMsg = `📋 НОВА ЗАЯВКА №${orderId}
+👤 Користувач: ${currentUser}
+💰 Сума: ${amount}₴
+📧 Email покупця: ${email}
+🕐 Час: ${new Date().toLocaleString()}
+
 💳 Реквізити для оплати:
-🏦 МоноБанк
-💳 Банка: 5565 8585 9582 1265
-👤 Отримувач: Іваненко І.І.
-📱 Для запитань: Напишіть в підтримку на сайті!
-    `;
+ПриватБанк: 5168 7422 1234 5678
+👤 Отримувач: Іваненко І.І.`;
     
-    const subject = `💰 Заявка на поповнення #${orderId} - SpireWorld`;
-    const message = `
-Шановний(а) ${username}!
-
-Ви створили заявку на поповнення балансу в розмірі ${amount} ₴.
-
-${bankDetails}
-
-📌 Номер вашої заявки: ${orderId}
-👤 Ім'я користувача: ${username}
-💵 Сума: ${amount} ₴
-
-Після оплати, будь ласка, повідомте адміністратора (натисніть "Відповісти" на цей лист).
-
-Ваш замовлення буде оброблено протягом 24 годин після підтвердження оплати.
-
-Дякуємо, що обираєте SpireWorld!
-    `;
-    
-    // Отправка через FormSubmit
     const formData = new FormData();
-    formData.append('email', userEmail);
-    formData.append('subject', subject);
-    formData.append('message', message);
+    formData.append('email', 'simpleworld237@gmail.com');
+    formData.append('subject', `💰 ЗАЯВКА №${orderId} від ${currentUser}`);
+    formData.append('message', adminMsg);
+    formData.append('_replyto', email);
     formData.append('_captcha', 'false');
+    await fetch('https://formsubmit.co/ajax/simpleworld237@gmail.com', { method: 'POST', body: formData });
+    
+    // Письмо ПОЛЬЗОВАТЕЛЮ
+    const userFormData = new FormData();
+    userFormData.append('email', email);
+    userFormData.append('subject', `💰 Ваша заявка №${orderId} - SpireWorld`);
+    userFormData.append('message', `Шановний ${currentUser}, ваша заявка на ${amount}₴ прийнята. Номер заявки: ${orderId}. Очікуйте підтвердження адміна.`);
+    userFormData.append('_captcha', 'false');
     
     try {
-        await fetch('https://formsubmit.co/ajax/simpleworld237@gmail.com', {
-            method: 'POST',
-            body: formData
-        });
-        console.log('✅ Письмо с реквизитами отправлено на', userEmail);
-        return true;
+        await fetch('https://formsubmit.co/ajax/' + email, { method: 'POST', body: userFormData });
     } catch(e) {
-        console.error('Ошибка отправки письма:', e);
-        return false;
+        console.log('Письмо пользователю не отправлено');
     }
-}
+    
+    alert(`✅ Заявку №${orderId} створено!\n\n💳 Реквізити для оплати:\nПриватБанк: 5168 7422 1234 5678\nСума: ${amount}₴\n\nНомер заявки: ${orderId}`);
+    
+    toast(`✅ Заявку №${orderId} на ${amount}₴ відправлено!`);
+    
+    document.getElementById('topupAmount').value = '';
+    document.getElementById('topupEmail').value = '';
+    closeTopupModal();
+};
 </script>
 </body>
 </html>
